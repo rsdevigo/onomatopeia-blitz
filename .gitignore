@@ -1,0 +1,83 @@
+# Unity — pastas geradas (não versionar)
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Crash / debug
+sysinfo.txt
+*.stacktrace
+
+# Rider / JetBrains (plugin gerado no projeto)
+[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Visual Studio / VS Code
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Gradle (Android)
+.gradle/
+*.keystore
+!*.keystore.template
+
+# Mono / consola
+ExportedObj/
+.consulo/
+
+# Soluções e projetos gerados pelo Unity / IDE
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Metas de artefactos gerados
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Builds comuns
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.ipa
+
+# Crashlytics (se usares)
+crashlytics-build.properties
+
+# Addressables — binários empacotados
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# StreamingAssets temporários (Addressables Android)
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Plastic SCM (se não quiseres versionar estado local)
+.plastic/
