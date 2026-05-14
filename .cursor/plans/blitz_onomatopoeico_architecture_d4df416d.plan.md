@@ -4,25 +4,25 @@ overview: A production-oriented Unity architecture for an educational reaction g
 todos:
   - id: asmdefs-folders
     content: Create asmdefs (Core, Gameplay, UI, Netcode, App) and Assets folder layout from section 2 (directly under Assets/, not under _Project)
-    status: pending
+    status: completed
   - id: answer-resolver-tests
     content: Implement AnswerResolver + CardGenerator for single-slot cards and 3-object table; EditMode tests for uniqueness (positive vs exclusion)
-    status: pending
+    status: completed
   - id: offline-round-loop
     content: Build MatchSession/RoundController + table registry (3 slots) + grab input offline
-    status: pending
+    status: completed
   - id: ui-toolkit-mvvm
     content: Add UI Toolkit UXML/USS + presenters for MainMenu, HUD, Results, Leaderboard
-    status: pending
+    status: completed
   - id: ngo-bridge
     content: Add NGO packages, NetMatchSession, ServerRpc grab validation, replicated phase/score
-    status: pending
+    status: completed
   - id: lobby-stub
     content: Implement ILobbyService stub + Lobby UI shell for 8 seats (local simulation)
-    status: pending
+    status: completed
   - id: minigame-two
     content: Implement IMinigame + Blitz scene; second minigame Fantasma with adapter for solution targets
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -45,13 +45,15 @@ isProject: false
 
 **Recommended assembly split (enforces dependency direction):**
 
-| Assembly | References allowed | Purpose |
-|----------|-------------------|---------|
-| `Blitz.Core` | None / minimal Unity | Rules, DTOs, RNG contracts, interfaces |
-| `Blitz.Gameplay` | Core, UnityEngine | Minigames, interactables, bots, local sim |
-| `Blitz.UI` | Core, UnityEngine.UIElements | Views, presenters, binding helpers |
-| `Blitz.Netcode` | Core, Gameplay, NGO | Network prefabs, RPC bridges, spawn logic |
-| `Blitz.App` | All | Composition root, scene bootstrap, ServiceLocator or explicit installers |
+
+| Assembly         | References allowed           | Purpose                                                                  |
+| ---------------- | ---------------------------- | ------------------------------------------------------------------------ |
+| `Blitz.Core`     | None / minimal Unity         | Rules, DTOs, RNG contracts, interfaces                                   |
+| `Blitz.Gameplay` | Core, UnityEngine            | Minigames, interactables, bots, local sim                                |
+| `Blitz.UI`       | Core, UnityEngine.UIElements | Views, presenters, binding helpers                                       |
+| `Blitz.Netcode`  | Core, Gameplay, NGO          | Network prefabs, RPC bridges, spawn logic                                |
+| `Blitz.App`      | All                          | Composition root, scene bootstrap, ServiceLocator or explicit installers |
+
 
 ---
 
@@ -116,7 +118,7 @@ Assets/
   Tests/                    # EditMode for rules; PlayMode for round flow
 ```
 
-**Convention:** All paths above are **`Assets/<Folder>`** (e.g. `Assets/Scripts/Core`). Do **not** nest the game under `Assets/_Project/` so designers and CI scripts have predictable locations and the tree stays parallel to `Assets/Settings`.
+**Convention:** All paths above are `**Assets/<Folder>`** (e.g. `Assets/Scripts/Core`). Do **not** nest the game under `Assets/_Project/` so designers and CI scripts have predictable locations and the tree stays parallel to `Assets/Settings`.
 
 **Scene strategy:**
 
@@ -169,20 +171,24 @@ flowchart TB
   RoundController --> UIPresenterLayer
 ```
 
-| System | Primary types (suggested names) | Responsibility |
-|--------|----------------------------------|----------------|
-| **GameManager** | `GameAppController`, `ApplicationStateMachine` | Top-level app states: Boot, Menu, Lobby, Match, Pause, Quit. Owns scene load requests, audio mixer snapshots, quality tier. |
-| **MatchManager** | `MatchSession`, `MatchConfig`, `MatchClock` | Configures difficulty, total cards, participant list (human + bots), win/lose conditions, transitions to results. |
-| **CardSystem** | `CardGenerator`, `GeneratedCard`, `CardPresentationPair` (figure + sound cue), `ICardVisualFactory` | Each card: **`CardLetterId`** (the letter the round is about) + **one pair** — **`FigureVisualId`** (art / mesh / illustration channel) + **`CuePhonemeId`** (written onomatopoeia + audio). Builds from **`ActiveLetterSoundSet` (3 letters/phonemes)**. Emits immutable `GeneratedCard` DTOs. Rules compare **`CuePhonemeId`** to `T(CardLetterId)`; the figure is usually consistent with that letter but policy may allow deliberate visual twists in advanced minigames. |
-| **SoundObjectSystem** | `SoundObjectDefinition` (SO), `SoundObjectInstance` (Mono), `TableRuntimeRegistry`, `ITableLayoutSource` | Binds **`Slot_0..Slot_2`** to the three runtime phonemes; exposes `SoundObjectId` **0–2** → world instance; handles highlight/disabled states. |
-| **InputSystem** | `IGrabInputSource`, `GrabPointerDriver` (mouse/touch/pointer), `InputActionReference` wiring | Normalizes ray/pointer → `GrabCandidate`; raises `GrabIntentEvent` with object id + time; one-hand = single active pointer channel (configurable second pointer ignored). |
-| **BotSystem** | `BotAgent`, `BotPersonalityProfile` (SO), `BotDecisionService` | Uses same `AnswerResolver` as humans; schedules `GrabIntent` + optional `SpeakQueued` after **reaction delay** from difficulty; never bypasses server checks in MP. |
-| **MinigameSystem** | `IMinigame`, `MinigameContext`, `MinigameRegistry` (SO list), `MinigameSceneHandle` | Selects minigame, loads additive scene, injects services, forwards lifecycle. |
-| **DifficultySystem** | `DifficultyProfile` (SO): bot timing ranges, **distractor / cue tier** (not extra card rows — always **one letter + figure/sound pair**), deck size | Selected in menu; produces `MatchRules` consumed by generator and bots. |
-| **ScoreSystem** | `ScoreLedger`, `RoundOutcome`, `IPointsPolicy` | Awards points for won cards, streak bonuses optional; emits domain events. |
-| **RankingSystem** | `LeaderboardRepository`, `PlayerProfile` | Persists top N scores with player name; read/write behind interface. |
-| **NetworkingSystem** | `NetworkGameBootstrap`, `NetworkMatchBridge`, `ServerRoundAuthority` | Hosts NGO setup, spawns session `NetworkObject`, routes RPCs to `MatchSession` server implementation. |
-| **LobbySystem** | `LobbyServiceStub` → future `UnityLobby` / Relay | Data model for up to **8** seats, ready flags, cosmetic slots; UI only depends on `ILobbyViewModel`. |
+
+
+
+| System                | Primary types (suggested names)                                                                                                                     | Responsibility                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **GameManager**       | `GameAppController`, `ApplicationStateMachine`                                                                                                      | Top-level app states: Boot, Menu, Lobby, Match, Pause, Quit. Owns scene load requests, audio mixer snapshots, quality tier.                                                                                                                                                                                                                                                                                                                                                   |
+| **MatchManager**      | `MatchSession`, `MatchConfig`, `MatchClock`                                                                                                         | Configures difficulty, total cards, participant list (human + bots), win/lose conditions, transitions to results.                                                                                                                                                                                                                                                                                                                                                             |
+| **CardSystem**        | `CardGenerator`, `GeneratedCard`, `CardPresentationPair` (figure + sound cue), `ICardVisualFactory`                                                 | Each card: `**CardLetterId`** (the letter the round is about) + **one pair** — `**FigureVisualId`** (art / mesh / illustration channel) + `**CuePhonemeId**` (written onomatopoeia + audio). Builds from `**ActiveLetterSoundSet` (3 letters/phonemes)**. Emits immutable `GeneratedCard` DTOs. Rules compare `**CuePhonemeId`** to `T(CardLetterId)`; the figure is usually consistent with that letter but policy may allow deliberate visual twists in advanced minigames. |
+| **SoundObjectSystem** | `SoundObjectDefinition` (SO), `SoundObjectInstance` (Mono), `TableRuntimeRegistry`, `ITableLayoutSource`                                            | Binds `**Slot_0..Slot_2`** to the three runtime phonemes; exposes `SoundObjectId` **0–2** → world instance; handles highlight/disabled states.                                                                                                                                                                                                                                                                                                                                |
+| **InputSystem**       | `IGrabInputSource`, `GrabPointerDriver` (mouse/touch/pointer), `InputActionReference` wiring                                                        | Normalizes ray/pointer → `GrabCandidate`; raises `GrabIntentEvent` with object id + time; one-hand = single active pointer channel (configurable second pointer ignored).                                                                                                                                                                                                                                                                                                     |
+| **BotSystem**         | `BotAgent`, `BotPersonalityProfile` (SO), `BotDecisionService`                                                                                      | Uses same `AnswerResolver` as humans; schedules `GrabIntent` + optional `SpeakQueued` after **reaction delay** from difficulty; never bypasses server checks in MP.                                                                                                                                                                                                                                                                                                           |
+| **MinigameSystem**    | `IMinigame`, `MinigameContext`, `MinigameRegistry` (SO list), `MinigameSceneHandle`                                                                 | Selects minigame, loads additive scene, injects services, forwards lifecycle.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **DifficultySystem**  | `DifficultyProfile` (SO): bot timing ranges, **distractor / cue tier** (not extra card rows — always **one letter + figure/sound pair**), deck size | Selected in menu; produces `MatchRules` consumed by generator and bots.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **ScoreSystem**       | `ScoreLedger`, `RoundOutcome`, `IPointsPolicy`                                                                                                      | Awards points for won cards, streak bonuses optional; emits domain events.                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **RankingSystem**     | `LeaderboardRepository`, `PlayerProfile`                                                                                                            | Persists top N scores with player name; read/write behind interface.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **NetworkingSystem**  | `NetworkGameBootstrap`, `NetworkMatchBridge`, `ServerRoundAuthority`                                                                                | Hosts NGO setup, spawns session `NetworkObject`, routes RPCs to `MatchSession` server implementation.                                                                                                                                                                                                                                                                                                                                                                         |
+| **LobbySystem**       | `LobbyServiceStub` → future `UnityLobby` / Relay                                                                                                    | Data model for up to **8** seats, ready flags, cosmetic slots; UI only depends on `ILobbyViewModel`.                                                                                                                                                                                                                                                                                                                                                                          |
+
 
 **Key interfaces (contracts, not implementations):**
 
@@ -205,12 +211,14 @@ flowchart TB
 
 **NetworkObject strategy:**
 
-| Entity | NetworkObject? | Notes |
-|--------|----------------|-------|
-| `NetMatchSession` | Yes (server) | Authoritative match/round state machine |
-| Each **sound object** | Optional | Prefer **server-validated grabs** referencing **`SoundObjectId` 0–2** (byte) via RPC rather than syncing every transform |
-| **Card visual** | Client-local or NetworkVariable struct | Large visuals: replicate **compact `CardStateHash`** or `GeneratedCard` compressed blob; clients instantiate visuals from shared prefab + hash |
-| **Bots** | No | Simulated only on server; appear as `ParticipantId` with `IsBot=true` in replicated roster |
+
+| Entity                | NetworkObject?                         | Notes                                                                                                                                          |
+| --------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NetMatchSession`     | Yes (server)                           | Authoritative match/round state machine                                                                                                        |
+| Each **sound object** | Optional                               | Prefer **server-validated grabs** referencing `**SoundObjectId` 0–2** (byte) via RPC rather than syncing every transform                       |
+| **Card visual**       | Client-local or NetworkVariable struct | Large visuals: replicate **compact `CardStateHash`** or `GeneratedCard` compressed blob; clients instantiate visuals from shared prefab + hash |
+| **Bots**              | No                                     | Simulated only on server; appear as `ParticipantId` with `IsBot=true` in replicated roster                                                     |
+
 
 **Ownership model:**
 
@@ -245,20 +253,20 @@ flowchart TB
 
 **ScriptableObjects (static, editor-authored):**
 
-- **`LetterDefinition`** — id, display name, default grapheme art refs, optional 3D mesh for Fantasma minigame.
-- **`PhonemeDefinition`** — id, IPA-ish tag, primary audio clip, lip-sync viseme set optional.
-- **`LetterPhonemeMapping`** — canonical “this letter’s taught sound” for a given curriculum locale (supports future regional variants).
-- **`SoundObjectVisualSet`** — prefab variants per object “personality” (color, mesh) keyed by slot style.
-- **`DifficultyProfile`** — fields below in section 7/8 interplay.
-- **`MinigameDescriptor`** — `MinigameId`, additive scene name, thumbnail, required capabilities (`Needs3DTable`, `CardStyle`), factory reference.
-- **`BotPersonalityProfile`** — delay distributions, mistake probability curve (0 for “teaching” bots if desired), speak cadence.
+- `**LetterDefinition`** — id, display name, default grapheme art refs, optional 3D mesh for Fantasma minigame.
+- `**PhonemeDefinition**` — id, IPA-ish tag, primary audio clip, lip-sync viseme set optional.
+- `**LetterPhonemeMapping**` — canonical “this letter’s taught sound” for a given curriculum locale (supports future regional variants).
+- `**SoundObjectVisualSet**` — prefab variants per object “personality” (color, mesh) keyed by slot style.
+- `**DifficultyProfile**` — fields below in section 7/8 interplay.
+- `**MinigameDescriptor**` — `MinigameId`, additive scene name, thumbnail, required capabilities (`Needs3DTable`, `CardStyle`), factory reference.
+- `**BotPersonalityProfile**` — delay distributions, mistake probability curve (0 for “teaching” bots if desired), speak cadence.
 
 **Runtime models (immutable where possible):**
 
-- **`MatchRules`** — struct from difficulty: `TotalRounds`, `GrabWindowSeconds`, **`TableOptionCount` = 3** (constant or config for future variants), `DistractorTier` / cue complexity, bot params. **Card layout:** always **one letter + one (figure + sound) pair** — not multiple slots.
-- **`ActiveLetterSoundSet`** — **three** `LetterPhonemePair` entries with **runtime assigned `SoundObjectId` 0–2** (permutation of which phoneme sits on which physical slot).
-- **`GeneratedCard`** — **`CardLetterId`**: the **target letter** the student reasons about. **`CardPresentationPair`**: **`FigureVisualId`** (visual channel — sprite/mesh ref id) + **`CuePhonemeId`** (sound channel — onomatopoeia + clip). **`CardMode`**: `HasTruePair` when `CuePhonemeId == T(CardLetterId)`; `ExclusionMismatch` when the cue does **not** match the true sound of that letter (exclusion over the **three** objects). Serialize as one struct for NGO; optional nested `CardSlot` type alias for legacy naming.
-- **`LeaderboardEntry`** — name, score, minigame id, date, difficulty.
+- `**MatchRules`** — struct from difficulty: `TotalRounds`, `GrabWindowSeconds`, `**TableOptionCount` = 3** (constant or config for future variants), `DistractorTier` / cue complexity, bot params. **Card layout:** always **one letter + one (figure + sound) pair** — not multiple slots.
+- `**ActiveLetterSoundSet`** — **three** `LetterPhonemePair` entries with **runtime assigned `SoundObjectId` 0–2** (permutation of which phoneme sits on which physical slot).
+- `**GeneratedCard`** — `**CardLetterId**`: the **target letter** the student reasons about. `**CardPresentationPair`**: `**FigureVisualId**` (visual channel — sprite/mesh ref id) + `**CuePhonemeId**` (sound channel — onomatopoeia + clip). `**CardMode**`: `HasTruePair` when `CuePhonemeId == T(CardLetterId)`; `ExclusionMismatch` when the cue does **not** match the true sound of that letter (exclusion over the **three** objects). Serialize as one struct for NGO; optional nested `CardSlot` type alias for legacy naming.
+- `**LeaderboardEntry`** — name, score, minigame id, date, difficulty.
 
 **Data-driven flow:**
 
@@ -289,6 +297,8 @@ stateDiagram-v2
   ResolveRound --> MatchEnd: deckEmpty
   MatchEnd --> [*]
 ```
+
+
 
 **Singleplayer vs multiplayer:**
 
@@ -335,9 +345,9 @@ stateDiagram-v2
 
 **Displayed card — one letter + one (figure + sound) pair:**
 
-- **`CardLetterId` = `L_card`** — the letter the card is **about** (always one of `A`).
+- `**CardLetterId` = `L_card`** — the letter the card is **about** (always one of `A`).
 - **Figure channel:** visual chosen from content (`FigureVisualId`) — normally the illustration / glyph for `L_card`.
-- **Sound channel:** **`CP` = `CuePhonemeId`** — cue phoneme shown + played on reveal (from the closed set of three phonemes in play unless policy extends distractors).
+- **Sound channel:** `**CP` = `CuePhonemeId`** — cue phoneme shown + played on reveal (from the closed set of three phonemes in play unless policy extends distractors).
 
 **Truth for the sound channel relative to the card letter:**
 
@@ -346,10 +356,10 @@ stateDiagram-v2
 
 **Player rules recap (use `L_card` and `CP`):**
 
-1. **Positive rule:** If `CP == T(L_card)`, grab the object whose table phoneme is **`CP`**.
+1. **Positive rule:** If `CP == T(L_card)`, grab the object whose table phoneme is `**CP`**.
 2. **Exclusion rule:** If `CP != T(L_card)`, grab object `j` such that:
-   - `Pj ≠ CP` (object’s phoneme identity is **not** the cue on the card), **and**
-   - `L(Pj) ≠ L_card` where `L(p)` is the unique letter in `A` whose true sound is `p`.
+  - `Pj ≠ CP` (object’s phoneme identity is **not** the cue on the card), **and**
+  - `L(Pj) ≠ L_card` where `L(p)` is the unique letter in `A` whose true sound is `p`.
 
 **Uniqueness guarantee (construction invariants):**
 
@@ -392,7 +402,7 @@ stateDiagram-v2
 
 ## 11. Minigame framework
 
-**`IMinigame` lifecycle:**
+`**IMinigame` lifecycle:**
 
 - `OnRegister(MinigameServices services)` — cache factories, audio, DI.
 - `OnSceneLoaded()` — bind anchors, spawn local props.
@@ -434,7 +444,7 @@ stateDiagram-v2
   - **Unity runtime binding** where version supports `Binding` paths in UXML.
 - **Navigation:** `IUINavigator` pushes stack of `UIPanelController` structs.
 
-**Separation:** UI listens to **`IMatchSession.ReadOnlyState`** events; never calls `Physics.Raycast`.
+**Separation:** UI listens to `**IMatchSession.ReadOnlyState`** events; never calls `Physics.Raycast`.
 
 ---
 
@@ -442,9 +452,9 @@ stateDiagram-v2
 
 **Prefab roles:**
 
-- **`TableLayoutRoot`** — empty with child anchors: **`Slot_0..Slot_2`** (Transform), optional `CardAnchor`, `HUDWorldSpaceAnchor`.
-- **`SoundObject_Base`** — contains `Collider`, `SoundObjectInstance`, highlight child; **no hardcoded letter**; receives binding at runtime.
-- **`MinigameContext`** — serialized references to `TableLayoutRoot`, `CardPresenter`, audio sources.
+- `**TableLayoutRoot`** — empty with child anchors: `**Slot_0..Slot_2**` (Transform), optional `CardAnchor`, `HUDWorldSpaceAnchor`.
+- `**SoundObject_Base**` — contains `Collider`, `SoundObjectInstance`, hiasmghlight child; **no hardcoded letter**; receives binding at runtime.
+- `**MinigameContext`** — serialized references to `TableLayoutRoot`, `CardPresenter`, audio sources.
 
 **Designer workflow:**
 
@@ -458,7 +468,7 @@ stateDiagram-v2
 
 ## 14. Multiplayer preparation details (checklist)
 
-- Introduce NGO packages and a **`NetworkPrefabsList`** containing `NetMatchSession` + any networked feedback spawner.
+- Introduce NGO packages and a `**NetworkPrefabsList`** containing `NetMatchSession` + any networked feedback spawner.
 - **Single build** with **host + client** test harness scene buttons (dev only).
 - **Serialization:** all DTOs used in RPCs marked with `INetworkSerializable` or use primitives only.
 - **Determinism:** if clients pre-simulate visuals, they still wait for server for outcomes.
@@ -468,7 +478,7 @@ stateDiagram-v2
 
 ## 15. Ranking system
 
-**Persistence:** Prefer **`Application.persistentDataPath` + JSON** (`leaderboard.json`) for clarity and backup ease; `PlayerPrefs` acceptable for **last used name** only.
+**Persistence:** Prefer `**Application.persistentDataPath` + JSON** (`leaderboard.json`) for clarity and backup ease; `PlayerPrefs` acceptable for **last used name** only.
 
 **Data structure:**
 
@@ -489,16 +499,16 @@ stateDiagram-v2
 
 ## 16. Next steps for implementation (ordered)
 
-1. Add **asmdefs** and empty folders per section 2 (**`Assets/` roots per tree, not `Assets/_Project/`**); wire **App** scene load of `MainMenu`.
-2. Implement **`AnswerResolver` + unit tests** for card uniqueness (highest risk area).
-3. Build **`TableRuntimeRegistry` + `SoundObjectInstance` + grab pipeline** offline.
-4. Implement **`MatchSession` / `RoundController`** with timer and score.
+1. Add **asmdefs** and empty folders per section 2 (`**Assets/` roots per tree, not `Assets/_Project/`**); wire **App** scene load of `MainMenu`.
+2. Implement `**AnswerResolver` + unit tests** for card uniqueness (highest risk area).
+3. Build `**TableRuntimeRegistry` + `SoundObjectInstance` + grab pipeline** offline.
+4. Implement `**MatchSession` / `RoundController`** with timer and score.
 5. Add **BotAgent** integrated with resolver.
 6. Build **UI Toolkit** MainMenu + HUD + Results with MVVM-style presenters.
 7. Add **NGO** packages, `NetMatchSession`, and replicate **phase + scores** only; validate grab RPC path.
-8. Stub **`LobbyViewModel`** + future service interface.
-9. Implement **`LeaderboardRepository` JSON** + UI list.
+8. Stub `**LobbyViewModel`** + future service interface.
+9. Implement `**LeaderboardRepository` JSON** + UI list.
 
 ---
 
-**Project-specific note:** Your [`Packages/manifest.json`](Packages/manifest.json) currently includes Input System and Multiplayer Center but **not** NGO; first networking milestone is adding Netcode packages and keeping all multiplayer types behind `Blitz.Netcode` asmdef to avoid leaking dependencies into Core/UI.
+**Project-specific note:** Your `[Packages/manifest.json](Packages/manifest.json)` currently includes Input System and Multiplayer Center but **not** NGO; first networking milestone is adding Netcode packages and keeping all multiplayer types behind `Blitz.Netcode` asmdef to avoid leaking dependencies into Core/UI.

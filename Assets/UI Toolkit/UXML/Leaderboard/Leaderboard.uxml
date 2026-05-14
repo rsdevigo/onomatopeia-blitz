@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../USS/Theme.uss" />
+    <ui:VisualElement name="root" class="blitz-root blitz-stack">
+        <ui:Label text="Ranking (top 20)" class="blitz-title" />
+        <ui:ListView name="entries" fixed-item-height="28" style="flex-grow: 1;" />
+        <ui:Button name="back" text="Voltar" class="blitz-button" />
+    </ui:VisualElement>
+</ui:UXML>

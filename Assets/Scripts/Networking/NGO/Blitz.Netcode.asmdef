@@ -1,0 +1,19 @@
+{
+  "name": "Blitz.Netcode",
+  "rootNamespace": "Blitz.Netcode",
+  "references": [
+    "Blitz.Core",
+    "Blitz.Gameplay",
+    "Unity.Netcode.Runtime",
+    "Unity.Netcode.GameObjects"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

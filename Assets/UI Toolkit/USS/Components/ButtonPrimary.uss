@@ -1,0 +1,4 @@
+.blitz-button-primary {
+    min-width: 160px;
+    -unity-font-style: bold;
+}

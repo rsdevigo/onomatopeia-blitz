@@ -1,0 +1,19 @@
+{
+  "name": "Blitz.App",
+  "rootNamespace": "Blitz.App",
+  "references": [
+    "Blitz.Core",
+    "Blitz.Gameplay",
+    "Blitz.UI",
+    "Blitz.Netcode"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

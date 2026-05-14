@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../USS/Theme.uss" />
+    <ui:VisualElement name="root" class="blitz-root blitz-stack">
+        <ui:Label text="Lobby (8 lugares)" class="blitz-title" />
+        <ui:VisualElement name="seats" class="blitz-stack" />
+        <ui:Button name="simulate" text="Simular preenchimento local" class="blitz-button" />
+        <ui:Button name="clear" text="Limpar" class="blitz-button" />
+    </ui:VisualElement>
+</ui:UXML>

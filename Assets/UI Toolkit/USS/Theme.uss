@@ -1,0 +1,54 @@
+:root {
+    --color-primary: #5b8cff;
+    --color-surface: #121418;
+    --color-surface-2: #1b1f27;
+    --color-text: #f2f4f8;
+    --color-muted: #9aa3b2;
+    --space-1: 6px;
+    --space-2: 10px;
+    --space-3: 16px;
+    --radius: 8px;
+}
+
+.blitz-root {
+    flex-grow: 1;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    padding: var(--space-3);
+}
+
+.blitz-title {
+    -unity-font-style: bold;
+    font-size: 22px;
+    margin-bottom: var(--space-3);
+}
+
+.blitz-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.blitz-stack {
+    flex-direction: column;
+}
+
+.blitz-button {
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    background-color: var(--color-primary);
+    color: white;
+    border-width: 0;
+}
+
+.blitz-muted {
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+.blitz-card {
+    background-color: var(--color-surface-2);
+    border-radius: var(--radius);
+    padding: var(--space-2);
+    margin-bottom: var(--space-2);
+}

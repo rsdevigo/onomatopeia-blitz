@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../USS/Theme.uss" />
+    <ui:VisualElement name="root" class="blitz-root blitz-stack">
+        <ui:Label text="Resultados" class="blitz-title" />
+        <ui:Label name="placement" text="Colocação: --" />
+        <ui:Label name="summary" text="Resumo da partida" class="blitz-muted" />
+        <ui:Button name="to-leaderboard" text="Ver ranking" class="blitz-button" />
+        <ui:Button name="to-menu" text="Menu principal" class="blitz-button" />
+    </ui:VisualElement>
+</ui:UXML>

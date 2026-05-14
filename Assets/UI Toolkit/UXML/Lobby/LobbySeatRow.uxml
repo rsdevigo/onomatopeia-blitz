@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../USS/Theme.uss" />
+    <ui:VisualElement name="row" class="blitz-row blitz-card">
+        <ui:Label name="seat-index" text="#" style="width: 28px;" />
+        <ui:Label name="seat-name" text="---" style="flex-grow: 1;" />
+        <ui:Toggle name="ready" text="Pronto" />
+    </ui:VisualElement>
+</ui:UXML>

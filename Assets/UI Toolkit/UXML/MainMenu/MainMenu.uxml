@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../USS/Theme.uss" />
+    <Style src="../../USS/Components/ButtonPrimary.uss" />
+    <ui:VisualElement name="root" class="blitz-root blitz-stack">
+        <ui:Label text="Blitz Onomatopoeico" class="blitz-title" />
+        <ui:TextField name="player-name" label="Nome" value="Jogador" />
+        <ui:DropdownField name="difficulty" label="Dificuldade" />
+        <ui:Button name="continue" text="Continuar" class="blitz-button blitz-button-primary" />
+        <ui:Label name="hint" class="blitz-muted" text="UI Toolkit + MVVM shell" />
+    </ui:VisualElement>
+</ui:UXML>
