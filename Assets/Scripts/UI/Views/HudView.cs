@@ -3,35 +3,36 @@ using Blitz.UI.Presenters;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Blitz.UI.Views;
-
-[DisallowMultipleComponent]
-[RequireComponent(typeof(UIDocument))]
-public sealed class HudView : MonoBehaviour
+namespace Blitz.UI.Views
 {
-    [SerializeField] LocalMatchSession? session;
-    [SerializeField] VisualTreeAsset? uxml;
-
-    HudPresenter? _presenter;
-
-    void OnEnable()
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(UIDocument))]
+    public sealed class HudView : MonoBehaviour
     {
-        session ??= FindFirstObjectByType<LocalMatchSession>();
-        if (session is null)
-            return;
+        [SerializeField] LocalMatchSession? session;
+        [SerializeField] VisualTreeAsset? uxml;
 
-        var doc = GetComponent<UIDocument>();
-        if (uxml != null)
-            doc.visualTreeAsset = uxml;
+        HudPresenter? _presenter;
 
-        var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
-        _presenter = new HudPresenter(root, session);
-        _presenter.Bind(root);
-    }
+        void OnEnable()
+        {
+            session ??= FindAnyObjectByType<LocalMatchSession>();
+            if (session is null)
+                return;
 
-    void OnDisable()
-    {
-        _presenter?.Unbind();
-        _presenter = null;
+            var doc = GetComponent<UIDocument>();
+            if (uxml != null)
+                doc.visualTreeAsset = uxml;
+
+            var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
+            _presenter = new HudPresenter(root, session);
+            _presenter.Bind(root);
+        }
+
+        void OnDisable()
+        {
+            _presenter?.Unbind();
+            _presenter = null;
+        }
     }
 }

@@ -1,36 +1,37 @@
 using Blitz.Core;
 using UnityEngine;
 
-namespace Blitz.Gameplay.Minigames;
-
-/// <summary>
-/// Default table minigame: uses core <see cref="AnswerResolver"/> slots directly.
-/// </summary>
-public sealed class BlitzOnomatopoeicoMinigame : MonoBehaviour, IMinigame
+namespace Blitz.Gameplay.Minigames
 {
-    [SerializeField] LocalMatchSession? session;
-
-    public void OnRegister(MinigameServices services)
+    /// <summary>
+    /// Default table minigame: uses core <see cref="AnswerResolver"/> slots directly.
+    /// </summary>
+    public sealed class BlitzOnomatopoeicoMinigame : MonoBehaviour, IMinigame
     {
-    }
+        [SerializeField] LocalMatchSession? session;
 
-    public void OnSceneLoaded() => session ??= FindFirstObjectByType<LocalMatchSession>();
+        public void OnRegister(MinigameServices services)
+        {
+        }
 
-    public void OnMatchBegin(MatchConfig config) => session?.StartMatch(config.Rules, config.Seed);
+        public void OnSceneLoaded() => session ??= FindAnyObjectByType<LocalMatchSession>();
 
-    public void OnRoundBegin(GeneratedCard card, ActiveLetterSoundSet set)
-    {
-    }
+        public void OnMatchBegin(MatchConfig config) => session?.StartMatch(config.Rules, config.Seed);
 
-    public void OnRoundEnd(RoundOutcome outcome)
-    {
-    }
+        public void OnRoundBegin(GeneratedCard card, ActiveLetterSoundSet set)
+        {
+        }
 
-    public void OnMatchEnd()
-    {
-    }
+        public void OnRoundEnd(RoundOutcome outcome)
+        {
+        }
 
-    public void OnUnregister()
-    {
+        public void OnMatchEnd()
+        {
+        }
+
+        public void OnUnregister()
+        {
+        }
     }
 }

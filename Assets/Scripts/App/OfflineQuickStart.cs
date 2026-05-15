@@ -2,24 +2,25 @@ using Blitz.Core;
 using Blitz.Gameplay;
 using UnityEngine;
 
-namespace Blitz.App;
-
-/// <summary>
-/// Minimal composition hook: starts an offline match for quick iteration.
-/// </summary>
-public sealed class OfflineQuickStart : MonoBehaviour
+namespace Blitz.App
 {
-    [SerializeField] LocalMatchSession? session;
-    [SerializeField] int totalRounds = 5;
-    [SerializeField] int seed = 123;
-    [SerializeField] float grabWindowSeconds = 3f;
-
-    void Start()
+    /// <summary>
+    /// Minimal composition hook: starts an offline match for quick iteration.
+    /// </summary>
+    public sealed class OfflineQuickStart : MonoBehaviour
     {
-        session ??= FindFirstObjectByType<LocalMatchSession>();
-        if (session is null)
-            return;
+        [SerializeField] LocalMatchSession? session;
+        [SerializeField] int totalRounds = 5;
+        [SerializeField] int seed = 123;
+        [SerializeField] float grabWindowSeconds = 3f;
 
-        session.StartMatch(new MatchRules(totalRounds, grabWindowSeconds), seed);
+        void Start()
+        {
+            session ??= FindAnyObjectByType<LocalMatchSession>();
+            if (session is null)
+                return;
+
+            session.StartMatch(new MatchRules(totalRounds, grabWindowSeconds), seed);
+        }
     }
 }

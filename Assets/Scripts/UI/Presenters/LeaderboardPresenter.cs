@@ -1,32 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
-namespace Blitz.UI.Presenters;
-
-public sealed class LeaderboardPresenter
+namespace Blitz.UI.Presenters
 {
-    readonly ListView _list;
-    readonly List<string> _rows = new();
-
-    public LeaderboardPresenter(VisualElement root)
+    public sealed class LeaderboardPresenter
     {
-        _list = root.Q<ListView>("entries")!;
-    }
+        readonly ListView _list;
+        readonly List<string> _rows = new();
 
-    public void Bind()
-    {
-        _rows.Clear();
-        for (var i = 1; i <= 10; i++)
-            _rows.Add($"{i}. DemoPlayer — {1200 - i * 37} pts");
-
-        _list.makeItem = () => new Label();
-        _list.bindItem = (e, i) =>
+        public LeaderboardPresenter(VisualElement root)
         {
-            if (e is Label l)
-                l.text = _rows[i];
-        };
+            _list = root.Q<ListView>("entries")!;
+        }
 
-        _list.itemsSource = _rows;
-        _list.Rebuild();
+        public void Bind()
+        {
+            _rows.Clear();
+            for (var i = 1; i <= 10; i++)
+                _rows.Add($"{i}. DemoPlayer — {1200 - i * 37} pts");
+
+            _list.makeItem = () => new Label();
+            _list.bindItem = (e, i) =>
+            {
+                if (e is Label l)
+                    l.text = _rows[i];
+            };
+
+            _list.itemsSource = _rows;
+            _list.Rebuild();
+        }
     }
 }

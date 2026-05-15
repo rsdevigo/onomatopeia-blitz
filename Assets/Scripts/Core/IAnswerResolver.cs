@@ -1,6 +1,7 @@
-namespace Blitz.Core;
-
-public interface IAnswerResolver
+namespace Blitz.Core
 {
-    SoundObjectId Resolve(GeneratedCard card, ActiveLetterSoundSet activeSet);
+    public interface IAnswerResolver
+    {
+        SoundObjectId Resolve(GeneratedCard card, ActiveLetterSoundSet activeSet);
+    }
 }

@@ -1,37 +1,38 @@
 using Blitz.Core;
 
-namespace Blitz.Gameplay.Minigames;
-
-public readonly struct MatchConfig
+namespace Blitz.Gameplay.Minigames
 {
-    public readonly MatchRules Rules;
-    public readonly int Seed;
-
-    public MatchConfig(MatchRules rules, int seed)
+    public readonly struct MatchConfig
     {
-        Rules = rules;
-        Seed = seed;
+        public readonly MatchRules Rules;
+        public readonly int Seed;
+
+        public MatchConfig(MatchRules rules, int seed)
+        {
+            Rules = rules;
+            Seed = seed;
+        }
     }
-}
 
-public sealed class MinigameServices
-{
-    public static MinigameServices Empty { get; } = new MinigameServices();
-}
+    public sealed class MinigameServices
+    {
+        public static MinigameServices Empty { get; } = new MinigameServices();
+    }
 
-public interface IMinigame
-{
-    void OnRegister(MinigameServices services);
+    public interface IMinigame
+    {
+        void OnRegister(MinigameServices services);
 
-    void OnSceneLoaded();
+        void OnSceneLoaded();
 
-    void OnMatchBegin(MatchConfig config);
+        void OnMatchBegin(MatchConfig config);
 
-    void OnRoundBegin(GeneratedCard card, ActiveLetterSoundSet set);
+        void OnRoundBegin(GeneratedCard card, ActiveLetterSoundSet set);
 
-    void OnRoundEnd(RoundOutcome outcome);
+        void OnRoundEnd(RoundOutcome outcome);
 
-    void OnMatchEnd();
+        void OnMatchEnd();
 
-    void OnUnregister();
+        void OnUnregister();
+    }
 }

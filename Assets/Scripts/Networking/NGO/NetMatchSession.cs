@@ -2,88 +2,89 @@ using Unity.Netcode;
 using UnityEngine;
 using Blitz.Core;
 
-namespace Blitz.Netcode;
-
-/// <summary>
-/// Server-spawned session object: replicates phase + score and validates grabs on the server.
-/// Add alongside a NetworkObject on the same GameObject.
-/// </summary>
-[DisallowMultipleComponent]
-public sealed class NetMatchSession : NetworkBehaviour
+namespace Blitz.Netcode
 {
-    readonly NetworkVariable<byte> _phase =
-        new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-    readonly NetworkVariable<int> _score =
-        new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-    readonly AnswerResolver _resolver = new();
-
-    GeneratedCard? _serverCard;
-    ActiveLetterSoundSet? _serverSet;
-
-    public byte ReplicatedPhase => _phase.Value;
-
-    public int ReplicatedScore => _score.Value;
-
-    public override void OnNetworkSpawn()
+    /// <summary>
+    /// Server-spawned session object: replicates phase + score and validates grabs on the server.
+    /// Add alongside a NetworkObject on the same GameObject.
+    /// </summary>
+    [DisallowMultipleComponent]
+    public sealed class NetMatchSession : NetworkBehaviour
     {
-        _phase.OnValueChanged += OnPhaseChanged;
-        _score.OnValueChanged += OnScoreChanged;
-    }
+        readonly NetworkVariable<byte> _phase =
+            new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    public override void OnNetworkDespawn()
-    {
-        _phase.OnValueChanged -= OnPhaseChanged;
-        _score.OnValueChanged -= OnScoreChanged;
-    }
+        readonly NetworkVariable<int> _score =
+            new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    void OnPhaseChanged(byte previous, byte current) =>
-        Debug.Log($"[NetMatchSession] phase {previous} -> {current}");
+        readonly AnswerResolver _resolver = new();
 
-    void OnScoreChanged(int previous, int current) =>
-        Debug.Log($"[NetMatchSession] score {previous} -> {current}");
+        GeneratedCard? _serverCard;
+        ActiveLetterSoundSet? _serverSet;
 
-    /// <summary>Host-only convenience to seed a round for RPC tests.</summary>
-    public void ServerBeginStubRound(int seed)
-    {
-        if (!IsServer)
-            return;
+        public byte ReplicatedPhase => _phase.Value;
 
-        var gen = new CardGenerator(seed);
-        if (!gen.TryGenerate(out var result))
-            return;
+        public int ReplicatedScore => _score.Value;
 
-        _serverCard = result.Card;
-        _serverSet = result.ActiveSet;
-        _phase.Value = (byte)MatchPhase.GrabPhase;
-    }
+        public override void OnNetworkSpawn()
+        {
+            _phase.OnValueChanged += OnPhaseChanged;
+            _score.OnValueChanged += OnScoreChanged;
+        }
 
-    [Rpc(SendTo.Server)]
-    public void SubmitGrabRpc(byte slotIndex, RpcParams rpcParams = default)
-    {
-        if (!IsServer)
-            return;
+        public override void OnNetworkDespawn()
+        {
+            _phase.OnValueChanged -= OnPhaseChanged;
+            _score.OnValueChanged -= OnScoreChanged;
+        }
 
-        if (slotIndex > 2)
-            return;
+        void OnPhaseChanged(byte previous, byte current) =>
+            Debug.Log($"[NetMatchSession] phase {previous} -> {current}");
 
-        if (_serverCard is null || _serverSet is null)
-            return;
+        void OnScoreChanged(int previous, int current) =>
+            Debug.Log($"[NetMatchSession] score {previous} -> {current}");
 
-        var correct = _resolver.Resolve(_serverCard.Value, _serverSet.Value);
-        if (correct.Slot == slotIndex)
-            _score.Value += 1;
+        /// <summary>Host-only convenience to seed a round for RPC tests.</summary>
+        public void ServerBeginStubRound(int seed)
+        {
+            if (!IsServer)
+                return;
 
-        _phase.Value = (byte)MatchPhase.ResolveRound;
-    }
+            var gen = new CardGenerator(seed);
+            if (!gen.TryGenerate(out var result))
+                return;
 
-    public void ServerResetScore()
-    {
-        if (!IsServer)
-            return;
+            _serverCard = result.Card;
+            _serverSet = result.ActiveSet;
+            _phase.Value = (byte)MatchPhase.GrabPhase;
+        }
 
-        _score.Value = 0;
-        _phase.Value = (byte)MatchPhase.MatchInit;
+        [Rpc(SendTo.Server)]
+        public void SubmitGrabRpc(byte slotIndex, RpcParams rpcParams = default)
+        {
+            if (!IsServer)
+                return;
+
+            if (slotIndex > 2)
+                return;
+
+            if (_serverCard is null || _serverSet is null)
+                return;
+
+            var correct = _resolver.Resolve(_serverCard.Value, _serverSet.Value);
+            if (correct.Slot == slotIndex)
+                _score.Value += 1;
+
+            _phase.Value = (byte)MatchPhase.ResolveRound;
+        }
+
+        public void ServerResetScore()
+        {
+            if (!IsServer)
+                return;
+
+            _score.Value = 0;
+            _phase.Value = (byte)MatchPhase.MatchInit;
+        }
     }
 }

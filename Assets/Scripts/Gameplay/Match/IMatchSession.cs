@@ -1,22 +1,23 @@
 using System;
 using Blitz.Core;
 
-namespace Blitz.Gameplay;
-
-public interface IMatchSession
+namespace Blitz.Gameplay
 {
-    MatchPhase Phase { get; }
-    int CurrentRoundIndex { get; }
-    int Score { get; }
-    GeneratedCard? CurrentCard { get; }
-    ActiveLetterSoundSet? ActiveSet { get; }
-    float GrabTimeRemaining { get; }
+    public interface IMatchSession
+    {
+        MatchPhase Phase { get; }
+        int CurrentRoundIndex { get; }
+        int Score { get; }
+        GeneratedCard? CurrentCard { get; }
+        ActiveLetterSoundSet? ActiveSet { get; }
+        float GrabTimeRemaining { get; }
 
-    void StartMatch(MatchRules rules, int seed);
+        void StartMatch(MatchRules rules, int seed);
 
-    void Tick(float deltaTime);
+        void Tick(float deltaTime);
 
-    bool TrySubmitGrab(SoundObjectId id);
+        bool TrySubmitGrab(SoundObjectId id);
 
-    event Action? StateChanged;
+        event Action? StateChanged;
+    }
 }
