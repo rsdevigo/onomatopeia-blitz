@@ -8,6 +8,7 @@
         <ui:Label name="timer" text="Janela: --" />
         <ui:VisualElement name="card-mount" class="blitz-card" style="min-height: 64px;">
             <ui:Label name="card-letter" text="Letra: --" />
+            <ui:Image name="card-figure" style="width: 96px; height: 96px; margin-top: 4px;" />
             <ui:Label name="card-cue" text="Som: --" />
             <ui:Label name="prompt" text="Diz o som!" class="blitz-muted" />
         </ui:VisualElement>

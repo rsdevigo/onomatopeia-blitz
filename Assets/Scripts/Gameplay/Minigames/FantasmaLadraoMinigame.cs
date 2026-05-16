@@ -21,7 +21,7 @@ namespace Blitz.Gameplay.Minigames
 
         public void OnMatchBegin(MatchConfig config) => session?.StartMatch(config.Rules, config.Seed);
 
-        public void OnRoundBegin(GeneratedCard card, ActiveLetterSoundSet set)
+        public void OnRoundBegin(GeneratedCard card, ActiveOnomatopoeiaSet set)
         {
         }
 

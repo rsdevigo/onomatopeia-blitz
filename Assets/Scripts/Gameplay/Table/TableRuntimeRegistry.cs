@@ -1,5 +1,6 @@
-using System;
 using Blitz.Core;
+using Blitz.Gameplay;
+using Blitz.Gameplay.Content;
 using UnityEngine;
 
 namespace Blitz.Gameplay.Table
@@ -26,6 +27,20 @@ namespace Blitz.Gameplay.Table
         }
 
         public SoundObjectInstance? GetSlot(byte index) => index <= 2 ? _slots[index] : null;
+
+        /// <summary>
+        /// Binds each slot to the onomatopoeia on the table for this match (sprite / label from <see cref="OnomatopoeiaDefinition"/> when available).
+        /// </summary>
+        public void ApplyMatchSlots(ActiveOnomatopoeiaSet set, IOnomatopoeiaMatchContent? content)
+        {
+            for (byte i = 0; i < 3; i++)
+            {
+                var id = set.GetOnomatopoeiaOnSlot(i);
+                OnomatopoeiaDefinition? def = null;
+                content?.TryGetDefinition(id, out def);
+                GetSlot(i)?.ApplyFromDefinition(def);
+            }
+        }
 
         public bool TryRaycastGrab(Camera camera, Vector3 screenPoint, out SoundObjectId id)
         {

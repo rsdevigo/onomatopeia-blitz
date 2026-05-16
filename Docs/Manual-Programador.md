@@ -20,13 +20,14 @@ Arquitetura **Blitz** em assemblies, fluxo de **match/rodada**, **UI** desacopla
 
 Arquivos-chave em `Assets/Scripts/Core/`:
 
-- **`Identifiers.cs`** — `LetterId`, `PhonemeId`, `SoundObjectId` (slot 0–2).
-- **`CardModels.cs`** — `GeneratedCard`, `CardMode` (`HasTruePair` vs `ExclusionMismatch`), `CardPresentationPair`.
-- **`ActiveLetterSoundSet.cs`** — três letras com `T(L)`, permutação de fonemas nos slots.
+- **`Identifiers.cs`** — `LetterId`, `OnomatopoeiaId`, `SoundObjectId` (slot 0–2).
+- **`CardModels.cs`** — `GeneratedCard`, `CardMode` (`HasTruePair` vs `ExclusionMismatch`), `CardPresentationPair` (figura + `CueOnomatopoeiaId`).
+- **`ActiveOnomatopoeiaSet.cs`** — três letras com `T(L)` (onomatopeia ensinada), permutação das três unidades nos slots da mesa.
 - **`AnswerResolver.cs`** / **`IAnswerResolver.cs`** — resposta canônica para `(carta, mesa)`.
-- **`CardGenerator.cs`** — gera par carta+mesa com retries.
+- **`CardGenerator.cs`** — gera **carta** para um `ActiveOnomatopoeiaSet` já fixo na partida (retries internos).
 - **`CardUniqueness.cs`** — invariantes de unicidade (usado pelo gerador e pelos testes).
 - **`MatchModels.cs`** — `MatchRules`, `MatchPhase`, `RoundOutcome`.
+- **`GameSessionPrefs.cs`** — chaves `PlayerPrefs` partilhadas entre cenas (`PlayerName`, `DifficultyIndex`, `PendingResultsScore`).
 - **Lobby (contrato + stub)** — `ILobbyService`, `LobbyServiceStub`, modelos de seat em `Assets/Scripts/Core/`.
 
 ### Testes EditMode
@@ -40,18 +41,33 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 
 ### Contrato
 
-- **`IMatchSession`** (`Assets/Scripts/Gameplay/Match/IMatchSession.cs`) — fase, pontos, carta ativa, `TrySubmitGrab`, `Tick`, evento `StateChanged`.
+- **`IMatchSession`** (`Assets/Scripts/Gameplay/Match/IMatchSession.cs`) — fase, pontos, carta ativa, conjunto ativo (`ActiveOnomatopoeiaSet`), `TrySubmitGrab`, `Tick`, evento `StateChanged`; `StartMatch(rules, seed)` ou `StartMatch(rules, activeSet, cardGenSeed)`.
 
 ### Implementação offline
 
-- **`LocalMatchSession`** — `MonoBehaviour` + `Update` chama `Tick`; delega em `RoundController`.
-- **`RoundController`** — máquina de estados por fase (`MatchInit` → … → `MatchEnd`); gera carta via `CardGenerator`; resolve com `AnswerResolver`; dispara `RoundResolved`.
+- **`LocalMatchSession`** — `MonoBehaviour` + `Update` chama `Tick`; delega em `RoundController`. Opcional: **`OnomatopoeiaCatalog`** no Inspector — sorteia três definições por partida; se vazio ou inválido, usa conjunto sintético de dev (`ActiveOnomatopoeiaSet.CreateSyntheticDevSet`).
+- **`RoundController`** — máquina de estados por fase (`MatchInit` → … → `MatchEnd`); **define o trio de onomatopeias no início da partida** (`BeginMatch` recebe `ActiveOnomatopoeiaSet`); cada rodada só gera **carta** via `CardGenerator.TryGenerateCard`; resolve com `AnswerResolver`; dispara `RoundResolved`.
+
+### Conteúdo (ScriptableObjects)
+
+- **`OnomatopoeiaDefinition`**, **`OnomatopoeiaCatalog`**, **`OnomatopoeiaMatchSampler`** — `Assets/Scripts/Gameplay/Content/`.
 
 ### Mesa e grab
 
-- **`TableRuntimeRegistry`** — registro de `SoundObjectInstance`, `TryRaycastGrab(Camera, screenPos, out SoundObjectId)`.
-- **`SoundObjectInstance`** — `slotIndex` 0–2; `OnEnable` registra no registry (procura `TableRuntimeRegistry` na cena/parent).
+- **`TableRuntimeRegistry`** — registro de `SoundObjectInstance`, `TryRaycastGrab(Camera, screenPos, out SoundObjectId)`; **`ApplyMatchSlots`** aplica os três SOs da partida aos slots.
+- **`SoundObjectInstance`** — `slotIndex` 0–2; `OnEnable` registra no registry; opcional **`SpriteRenderer`** (`figureRenderer`) preenchido por `ApplyFromDefinition` quando há `OnomatopoeiaDefinition` no slot.
 - **`OfflineGrabInputDriver`** — `GrabPhase` + clique esquerdo (`Mouse.current`) + `TrySubmitGrab`.
+
+### Fluxo de cenas (offline)
+
+- **`SceneNames`** / **`SceneFlow`** (`Assets/Scripts/Gameplay/Navigation/`) — nomes estáveis das cenas e `LoadSceneAsync(..., Single)` para menu, jogo offline, resultados e ranking. As views de UI chamam estes métodos (ex.: `MainMenuView` → `LoadOfflineGame`, fim de partida → `LoadResults`).
+- **Build Settings** — ordem sugerida no **File → Build Settings** (índice 0 = entrada do *build*):
+  0. `Assets/Scenes/10_MainMenu.unity`
+  1. `Assets/Scenes/30_Gameplay_Offline.unity`
+  2. `Assets/Scenes/40_Results.unity`
+  3. `Assets/Scenes/50_Leaderboard.unity`
+  4. `Assets/Scenes/SampleScene.unity` (opcional; iteração rápida sem passar pelo menu)
+- **`OfflineQuickStart`** (`Blitz.App`) — ao terminar a partida (`MatchPhase.MatchEnd`), grava a pontuação em `GameSessionPrefs.PendingResultsScore` e carrega `40_Results`.
 
 ### Feedback
 
@@ -78,7 +94,7 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 - **`NetMatchSession`** (`Assets/Scripts/Networking/NGO/NetMatchSession.cs`) — `NetworkBehaviour`:
   - `NetworkVariable<byte>` fase, `NetworkVariable<int>` pontuação.
   - `SubmitGrabRpc` — `[Rpc(SendTo.Server)]`; valida contra carta/servidor e atualiza estado **no servidor**.
-  - `ServerBeginStubRound` — helper para gerar carta no servidor (testes / host).
+  - `ServerBeginStubRound` — helper para gerar carta no servidor (testes / host) com conjunto sintético de dev.
 
 ### Checklist NGO
 

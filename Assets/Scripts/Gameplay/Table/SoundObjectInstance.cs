@@ -1,4 +1,5 @@
 using Blitz.Core;
+using Blitz.Gameplay.Content;
 using UnityEngine;
 
 namespace Blitz.Gameplay.Table
@@ -6,6 +7,7 @@ namespace Blitz.Gameplay.Table
     public sealed class SoundObjectInstance : MonoBehaviour
     {
         [SerializeField] byte slotIndex;
+        [SerializeField] SpriteRenderer? figureRenderer;
 
         TableRuntimeRegistry? _registry;
 
@@ -15,6 +17,16 @@ namespace Blitz.Gameplay.Table
         {
             slotIndex = slot;
             _registry = registry;
+        }
+
+        /// <summary>Updates world visuals for this slot from the match's <see cref="OnomatopoeiaDefinition"/>.</summary>
+        public void ApplyFromDefinition(OnomatopoeiaDefinition? definition)
+        {
+            if (figureRenderer is null)
+                return;
+
+            figureRenderer.sprite = definition?.FigureSprite;
+            figureRenderer.enabled = figureRenderer.sprite != null;
         }
 
         void OnEnable()

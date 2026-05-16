@@ -1,3 +1,4 @@
+using System;
 using Blitz.Core;
 using NUnit.Framework;
 
@@ -10,15 +11,15 @@ namespace Blitz.Core.Tests
         [Test]
         public void Positive_ResolvesUniqueSlotMatchingCue()
         {
-            var set = new ActiveLetterSoundSet(
-                new LetterId(0), new PhonemeId(10),
-                new LetterId(1), new PhonemeId(11),
-                new LetterId(2), new PhonemeId(12),
-                new PhonemeId(12), new PhonemeId(10), new PhonemeId(11));
+            var set = new ActiveOnomatopoeiaSet(
+                new LetterId(0), new OnomatopoeiaId(10),
+                new LetterId(1), new OnomatopoeiaId(11),
+                new LetterId(2), new OnomatopoeiaId(12),
+                new OnomatopoeiaId(12), new OnomatopoeiaId(10), new OnomatopoeiaId(11));
 
             var card = new GeneratedCard(
                 new LetterId(1),
-                new CardPresentationPair(1, new PhonemeId(11)),
+                new CardPresentationPair(1, new OnomatopoeiaId(11)),
                 CardMode.HasTruePair);
 
             var answer = Resolver.Resolve(card, set);
@@ -28,15 +29,15 @@ namespace Blitz.Core.Tests
         [Test]
         public void Exclusion_ResolvesUniqueObjectByRule()
         {
-            var set = new ActiveLetterSoundSet(
-                new LetterId(0), new PhonemeId(10),
-                new LetterId(1), new PhonemeId(11),
-                new LetterId(2), new PhonemeId(12),
-                new PhonemeId(12), new PhonemeId(10), new PhonemeId(11));
+            var set = new ActiveOnomatopoeiaSet(
+                new LetterId(0), new OnomatopoeiaId(10),
+                new LetterId(1), new OnomatopoeiaId(11),
+                new LetterId(2), new OnomatopoeiaId(12),
+                new OnomatopoeiaId(12), new OnomatopoeiaId(10), new OnomatopoeiaId(11));
 
             var card = new GeneratedCard(
                 new LetterId(1),
-                new CardPresentationPair(9, new PhonemeId(12)),
+                new CardPresentationPair(9, new OnomatopoeiaId(12)),
                 CardMode.ExclusionMismatch);
 
             var answer = Resolver.Resolve(card, set);
@@ -48,25 +49,26 @@ namespace Blitz.Core.Tests
         {
             for (var seed = 0; seed < 500; seed++)
             {
+                var rng = new Random(seed);
+                var set = ActiveOnomatopoeiaSet.CreateSyntheticDevSet(rng);
                 var gen = new CardGenerator(seed);
-                Assert.That(gen.TryGenerate(out var result), Is.True, $"seed {seed}");
+                Assert.That(gen.TryGenerateCard(set, out var card), Is.True, $"seed {seed}");
 
-                if (result.Card.Mode == CardMode.HasTruePair)
-                    Assert.That(CardUniqueness.PositiveHasUniqueSolution(result.Card.CuePhonemeId, result.ActiveSet), Is.True);
+                if (card.Mode == CardMode.HasTruePair)
+                    Assert.That(CardUniqueness.PositiveHasUniqueSolution(card.CueOnomatopoeiaId, set), Is.True);
 
-                if (result.Card.Mode == CardMode.ExclusionMismatch)
+                if (card.Mode == CardMode.ExclusionMismatch)
                 {
                     Assert.That(
-                        CardUniqueness.ExclusionHasUniqueSolution(result.Card.CardLetterId, result.Card.CuePhonemeId, result.ActiveSet),
+                        CardUniqueness.ExclusionHasUniqueSolution(card.CardLetterId, card.CueOnomatopoeiaId, set),
                         Is.True,
                         $"seed {seed}");
                 }
 
-                Assert.DoesNotThrow(() => Resolver.Resolve(result.Card, result.ActiveSet));
-                var resolved = Resolver.Resolve(result.Card, result.ActiveSet);
+                var resolved = Resolver.Resolve(card, set);
 
-                if (result.Card.Mode == CardMode.HasTruePair)
-                    Assert.That(result.ActiveSet.GetPhonemeOnSlot(resolved.Slot), Is.EqualTo(result.Card.CuePhonemeId));
+                if (card.Mode == CardMode.HasTruePair)
+                    Assert.That(set.GetOnomatopoeiaOnSlot(resolved.Slot), Is.EqualTo(card.CueOnomatopoeiaId));
             }
         }
     }

@@ -9,12 +9,12 @@ namespace Blitz.Core
     public readonly struct CardPresentationPair
     {
         public readonly ushort FigureVisualId;
-        public readonly PhonemeId CuePhonemeId;
+        public readonly OnomatopoeiaId CueOnomatopoeiaId;
 
-        public CardPresentationPair(ushort figureVisualId, PhonemeId cuePhonemeId)
+        public CardPresentationPair(ushort figureVisualId, OnomatopoeiaId cueOnomatopoeiaId)
         {
             FigureVisualId = figureVisualId;
-            CuePhonemeId = cuePhonemeId;
+            CueOnomatopoeiaId = cueOnomatopoeiaId;
         }
     }
 
@@ -24,7 +24,7 @@ namespace Blitz.Core
         public readonly CardPresentationPair Pair;
         public readonly CardMode Mode;
 
-        public PhonemeId CuePhonemeId => Pair.CuePhonemeId;
+        public OnomatopoeiaId CueOnomatopoeiaId => Pair.CueOnomatopoeiaId;
 
         public GeneratedCard(LetterId cardLetterId, CardPresentationPair pair, CardMode mode)
         {

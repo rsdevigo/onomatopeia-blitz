@@ -19,21 +19,21 @@ namespace Blitz.Core
         public static bool operator !=(LetterId left, LetterId right) => !left.Equals(right);
     }
 
-    public readonly struct PhonemeId : IEquatable<PhonemeId>
+    public readonly struct OnomatopoeiaId : IEquatable<OnomatopoeiaId>
     {
         public readonly byte Value;
 
-        public PhonemeId(byte value) => Value = value;
+        public OnomatopoeiaId(byte value) => Value = value;
 
-        public bool Equals(PhonemeId other) => Value == other.Value;
+        public bool Equals(OnomatopoeiaId other) => Value == other.Value;
 
-        public override bool Equals(object? obj) => obj is PhonemeId other && Equals(other);
+        public override bool Equals(object? obj) => obj is OnomatopoeiaId other && Equals(other);
 
         public override int GetHashCode() => Value.GetHashCode();
 
-        public static bool operator ==(PhonemeId left, PhonemeId right) => left.Equals(right);
+        public static bool operator ==(OnomatopoeiaId left, OnomatopoeiaId right) => left.Equals(right);
 
-        public static bool operator !=(PhonemeId left, PhonemeId right) => !left.Equals(right);
+        public static bool operator !=(OnomatopoeiaId left, OnomatopoeiaId right) => !left.Equals(right);
     }
 
     public readonly struct SoundObjectId : IEquatable<SoundObjectId>

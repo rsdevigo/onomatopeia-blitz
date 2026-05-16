@@ -1,3 +1,5 @@
+using Blitz.Core;
+using Blitz.Gameplay.Navigation;
 using Blitz.UI.Presenters;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,7 +22,8 @@ namespace Blitz.UI.Views
 
             var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
             _presenter = new ResultsPresenter(root);
-            _presenter.Bind();
+            var score = PlayerPrefs.GetInt(GameSessionPrefs.PendingResultsScore, 0);
+            _presenter.Bind(score);
 
             var toLb = root.Q<Button>("to-leaderboard");
             var toMenu = root.Q<Button>("to-menu");
@@ -43,8 +46,8 @@ namespace Blitz.UI.Views
             if (toMenu != null) toMenu.clicked -= OnToMenu;
         }
 
-        static void OnToLeaderboard() => Debug.Log("[Results] -> leaderboard");
+        static void OnToLeaderboard() => SceneFlow.LoadLeaderboard();
 
-        static void OnToMenu() => Debug.Log("[Results] -> main menu");
+        static void OnToMenu() => SceneFlow.LoadMainMenu();
     }
 }

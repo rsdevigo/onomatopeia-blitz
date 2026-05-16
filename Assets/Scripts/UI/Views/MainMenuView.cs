@@ -1,3 +1,5 @@
+using Blitz.Core;
+using Blitz.Gameplay.Navigation;
 using Blitz.UI.Presenters;
 using Blitz.UI.ViewModels;
 using UnityEngine;
@@ -16,6 +18,9 @@ namespace Blitz.UI.Views
 
         void OnEnable()
         {
+            _vm.PlayerName = PlayerPrefs.GetString(GameSessionPrefs.PlayerName, _vm.PlayerName);
+            _vm.DifficultyIndex = PlayerPrefs.GetInt(GameSessionPrefs.DifficultyIndex, _vm.DifficultyIndex);
+
             var doc = GetComponent<UIDocument>();
             if (uxml != null)
                 doc.visualTreeAsset = uxml;
@@ -43,6 +48,12 @@ namespace Blitz.UI.Views
                 continueBtn.clicked -= OnContinue;
         }
 
-        void OnContinue() => Debug.Log($"[MainMenu] continue as '{_vm.PlayerName}' difficulty index {_vm.DifficultyIndex}");
+        void OnContinue()
+        {
+            PlayerPrefs.SetString(GameSessionPrefs.PlayerName, _vm.PlayerName);
+            PlayerPrefs.SetInt(GameSessionPrefs.DifficultyIndex, _vm.DifficultyIndex);
+            PlayerPrefs.Save();
+            SceneFlow.LoadOfflineGame();
+        }
     }
 }

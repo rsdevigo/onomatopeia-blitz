@@ -7,35 +7,35 @@ namespace Blitz.Core
     /// </summary>
     public sealed class AnswerResolver : IAnswerResolver
     {
-        public SoundObjectId Resolve(GeneratedCard card, ActiveLetterSoundSet activeSet)
+        public SoundObjectId Resolve(GeneratedCard card, ActiveOnomatopoeiaSet activeSet)
         {
-            var trueSound = activeSet.TruePhonemeForLetter(card.CardLetterId);
-            var cp = card.CuePhonemeId;
+            var trueUnit = activeSet.TrueOnomatopoeiaForLetter(card.CardLetterId);
+            var co = card.CueOnomatopoeiaId;
 
             if (card.Mode == CardMode.HasTruePair)
             {
-                if (cp != trueSound)
-                    throw new InvalidOperationException("Positive card requires cue phoneme to equal T(CardLetterId).");
+                if (co != trueUnit)
+                    throw new InvalidOperationException("Positive card requires cue onomatopoeia to equal T(CardLetterId).");
 
                 for (byte j = 0; j < 3; j++)
                 {
-                    if (activeSet.GetPhonemeOnSlot(j) == cp)
+                    if (activeSet.GetOnomatopoeiaOnSlot(j) == co)
                         return new SoundObjectId(j);
                 }
 
-                throw new InvalidOperationException("No table slot carries the cue phoneme.");
+                throw new InvalidOperationException("No table slot carries the cue onomatopoeia.");
             }
 
-            if (cp == trueSound)
-                throw new InvalidOperationException("Exclusion card requires cue phoneme to differ from T(CardLetterId).");
+            if (co == trueUnit)
+                throw new InvalidOperationException("Exclusion card requires cue onomatopoeia to differ from T(CardLetterId).");
 
             SoundObjectId? unique = null;
             for (byte j = 0; j < 3; j++)
             {
-                var pj = activeSet.GetPhonemeOnSlot(j);
-                if (pj == cp) continue;
+                var pj = activeSet.GetOnomatopoeiaOnSlot(j);
+                if (pj == co) continue;
 
-                var letterForPj = activeSet.LetterWhoseTrueSoundIs(pj);
+                var letterForPj = activeSet.LetterWhoseTrueOnomatopoeiaIs(pj);
                 if (letterForPj == card.CardLetterId) continue;
 
                 if (unique.HasValue)

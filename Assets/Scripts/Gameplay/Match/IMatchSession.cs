@@ -9,10 +9,12 @@ namespace Blitz.Gameplay
         int CurrentRoundIndex { get; }
         int Score { get; }
         GeneratedCard? CurrentCard { get; }
-        ActiveLetterSoundSet? ActiveSet { get; }
+        ActiveOnomatopoeiaSet? ActiveSet { get; }
         float GrabTimeRemaining { get; }
 
         void StartMatch(MatchRules rules, int seed);
+
+        void StartMatch(MatchRules rules, ActiveOnomatopoeiaSet activeSet, int cardGenSeed);
 
         void Tick(float deltaTime);
 

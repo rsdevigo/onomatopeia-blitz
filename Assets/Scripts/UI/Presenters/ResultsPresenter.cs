@@ -13,10 +13,10 @@ namespace Blitz.UI.Presenters
             _summary = root.Q<Label>("summary")!;
         }
 
-        public void Bind()
+        public void Bind(int finalScore)
         {
-            _placement.text = "Colocação: 1º (demo)";
-            _summary.text = "Resumo: +100 por carta (stub)";
+            _placement.text = "Partida concluída";
+            _summary.text = $"Pontuação final: {finalScore} carta(s) correta(s).";
         }
 
         public void Unbind()

@@ -27,7 +27,7 @@ namespace Blitz.Gameplay.Minigames
 
         void OnMatchBegin(MatchConfig config);
 
-        void OnRoundBegin(GeneratedCard card, ActiveLetterSoundSet set);
+        void OnRoundBegin(GeneratedCard card, ActiveOnomatopoeiaSet set);
 
         void OnRoundEnd(RoundOutcome outcome);
 

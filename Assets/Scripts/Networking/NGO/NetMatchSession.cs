@@ -1,6 +1,7 @@
+using System;
+using Blitz.Core;
 using Unity.Netcode;
 using UnityEngine;
-using Blitz.Core;
 
 namespace Blitz.Netcode
 {
@@ -20,7 +21,7 @@ namespace Blitz.Netcode
         readonly AnswerResolver _resolver = new();
 
         GeneratedCard? _serverCard;
-        ActiveLetterSoundSet? _serverSet;
+        ActiveOnomatopoeiaSet? _serverSet;
 
         public byte ReplicatedPhase => _phase.Value;
 
@@ -50,12 +51,14 @@ namespace Blitz.Netcode
             if (!IsServer)
                 return;
 
+            var rng = new Random(seed);
+            var set = ActiveOnomatopoeiaSet.CreateSyntheticDevSet(rng);
             var gen = new CardGenerator(seed);
-            if (!gen.TryGenerate(out var result))
+            if (!gen.TryGenerateCard(set, out var card))
                 return;
 
-            _serverCard = result.Card;
-            _serverSet = result.ActiveSet;
+            _serverCard = card;
+            _serverSet = set;
             _phase.Value = (byte)MatchPhase.GrabPhase;
         }
 

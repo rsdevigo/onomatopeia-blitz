@@ -15,11 +15,13 @@ namespace Blitz.Gameplay
 
         public GeneratedCard? CurrentCard { get; private set; }
 
-        public ActiveLetterSoundSet? ActiveSet { get; private set; }
+        public ActiveOnomatopoeiaSet? ActiveSet { get; private set; }
 
         public float GrabTimeRemaining { get; private set; }
 
         MatchRules _rules;
+
+        ActiveOnomatopoeiaSet _matchSet;
 
         CardGenerator _generator = null!;
 
@@ -31,10 +33,15 @@ namespace Blitz.Gameplay
 
         public event Action<RoundOutcome>? RoundResolved;
 
-        public void BeginMatch(MatchRules rules, int seed)
+        /// <summary>Raised after <see cref="CurrentCard"/> is assigned for the upcoming round (before grab phase).</summary>
+        public event Action<GeneratedCard>? CardPrepared;
+
+        public void BeginMatch(MatchRules rules, ActiveOnomatopoeiaSet activeSet, int cardGenSeed)
         {
             _rules = rules;
-            _generator = new CardGenerator(seed);
+            _matchSet = activeSet;
+            ActiveSet = activeSet;
+            _generator = new CardGenerator(cardGenSeed);
             CurrentRoundIndex = 0;
             Score = 0;
             Phase = MatchPhase.MatchInit;
@@ -42,7 +49,6 @@ namespace Blitz.Gameplay
             _grab = null;
             _grabConsumed = false;
             CurrentCard = null;
-            ActiveSet = null;
             GrabTimeRemaining = 0f;
         }
 
@@ -128,11 +134,11 @@ namespace Blitz.Gameplay
 
         void PrepareRoundContent()
         {
-            if (!_generator.TryGenerate(out var result))
+            if (!_generator.TryGenerateCard(_matchSet, out var card))
                 throw new InvalidOperationException("Card generation failed.");
 
-            CurrentCard = result.Card;
-            ActiveSet = result.ActiveSet;
+            CurrentCard = card;
+            CardPrepared?.Invoke(card);
             _grab = null;
             _grabConsumed = false;
         }
@@ -142,11 +148,11 @@ namespace Blitz.Gameplay
             if (Phase != MatchPhase.GrabPhase && Phase != MatchPhase.SpeakPhase)
                 return;
 
-            if (CurrentCard is null || ActiveSet is null)
+            if (CurrentCard is null)
                 throw new InvalidOperationException("Resolve without active card.");
 
             var card = CurrentCard.Value;
-            var set = ActiveSet.Value;
+            var set = _matchSet;
             var correct = _resolver.Resolve(card, set);
 
             var won = claimed.HasValue && claimed.Value == correct;

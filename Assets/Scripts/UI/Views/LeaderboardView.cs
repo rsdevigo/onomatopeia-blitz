@@ -1,3 +1,4 @@
+using Blitz.Gameplay.Navigation;
 using Blitz.UI.Presenters;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -29,8 +30,6 @@ namespace Blitz.UI.Views
 
         void OnDisable()
         {
-            _presenter = null;
-
             var doc = GetComponent<UIDocument>();
             if (doc == null) return;
 
@@ -38,8 +37,10 @@ namespace Blitz.UI.Views
             var back = root.Q<Button>("back");
             if (back != null)
                 back.clicked -= OnBack;
+
+            _presenter = null;
         }
 
-        static void OnBack() => Debug.Log("[Leaderboard] back");
+        static void OnBack() => SceneFlow.LoadMainMenu();
     }
 }

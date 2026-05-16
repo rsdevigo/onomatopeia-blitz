@@ -25,7 +25,7 @@ namespace Blitz.UI.Views
                 doc.visualTreeAsset = uxml;
 
             var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
-            _presenter = new HudPresenter(root, session);
+            _presenter = new HudPresenter(root, session, session as IOnomatopoeiaMatchContent);
             _presenter.Bind(root);
         }
 
