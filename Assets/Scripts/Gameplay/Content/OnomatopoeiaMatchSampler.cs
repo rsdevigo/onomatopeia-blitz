@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Blitz.Core;
-using UnityEngine;
 
 namespace Blitz.Gameplay.Content
 {

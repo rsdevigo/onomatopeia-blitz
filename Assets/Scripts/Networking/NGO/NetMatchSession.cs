@@ -51,7 +51,7 @@ namespace Blitz.Netcode
             if (!IsServer)
                 return;
 
-            var rng = new Random(seed);
+            var rng = new System.Random(seed);
             var set = ActiveOnomatopoeiaSet.CreateSyntheticDevSet(rng);
             var gen = new CardGenerator(seed);
             if (!gen.TryGenerateCard(set, out var card))

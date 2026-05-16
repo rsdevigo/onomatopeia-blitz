@@ -1,5 +1,6 @@
 using Blitz.Core;
 using Blitz.Gameplay;
+using Blitz.Gameplay.Content;
 using Blitz.UI.Binding;
 using UnityEngine.UIElements;
 
@@ -58,10 +59,12 @@ namespace Blitz.UI.Presenters
             }
 
             var trueForLetter = activeSet.TrueOnomatopoeiaForLetter(card.CardLetterId);
-            _content?.TryGetDefinition(trueForLetter, out var letterDef);
+            OnomatopoeiaDefinition? letterDef = null;
+            _content?.TryGetDefinition(trueForLetter, out letterDef);
             _letter.text = letterDef != null ? $"Letra: {letterDef.LetterDisplay}" : $"Letra: {card.CardLetterId.Value}";
 
-            _content?.TryGetDefinition(card.CueOnomatopoeiaId, out var cueDef);
+            OnomatopoeiaDefinition? cueDef = null;
+            _content?.TryGetDefinition(card.CueOnomatopoeiaId, out cueDef);
             if (cueDef != null && !string.IsNullOrWhiteSpace(cueDef.WrittenLabel))
                 _cue.text = $"{cueDef.WrittenLabel} ({card.Mode})";
             else
@@ -70,7 +73,8 @@ namespace Blitz.UI.Presenters
             if (_cardFigure is null)
                 return;
 
-            _content?.TryGetDefinition(trueForLetter, out var figureDef);
+            OnomatopoeiaDefinition? figureDef = null;
+            _content?.TryGetDefinition(trueForLetter, out figureDef);
             var sprite = figureDef?.FigureSprite;
             _cardFigure.sprite = sprite;
             _cardFigure.style.display = sprite != null ? DisplayStyle.Flex : DisplayStyle.None;
