@@ -22,11 +22,20 @@ namespace Blitz.Gameplay.Table
         /// <summary>Updates world visuals for this slot from the match's <see cref="OnomatopoeiaDefinition"/>.</summary>
         public void ApplyFromDefinition(OnomatopoeiaDefinition? definition)
         {
-            if (figureRenderer is null)
+            var renderer = ResolveFigureRenderer();
+            if (renderer == null)
                 return;
 
-            figureRenderer.sprite = definition?.FigureSprite;
-            figureRenderer.enabled = figureRenderer.sprite != null;
+            renderer.sprite = definition?.FigureSprite;
+            renderer.enabled = renderer.sprite != null;
+        }
+
+        SpriteRenderer? ResolveFigureRenderer()
+        {
+            if (figureRenderer != null)
+                return figureRenderer;
+
+            return GetComponent<SpriteRenderer>();
         }
 
         void OnEnable()

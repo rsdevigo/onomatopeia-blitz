@@ -100,6 +100,7 @@ Detalhe técnico de `IMinigame` e adaptadores: veja [Manual do Programador](Manu
 ## 7. Onde aprofundar
 
 - [Primeiros passos](Getting-Started.md) — primeiro arranque e smoke test.  
+- [Manual de ScriptableObjects](Manual-ScriptableObjects.md) — criar definitions de som/figura e catálogos.  
 - [Manual do Game Designer](Manual-Game-Designer.md) — regras e pacing.  
 - [Manual do Programador](Manual-Programador.md) — extensão e integração.  
 - Blueprint: `.cursor/plans/blitz_onomatopoeico_architecture_d4df416d.plan.md`.

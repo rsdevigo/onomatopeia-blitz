@@ -1,0 +1,21 @@
+{
+  "name": "Blitz.Editor",
+  "rootNamespace": "Blitz.Editor",
+  "references": [
+    "Blitz.App",
+    "Blitz.Core",
+    "Blitz.Gameplay",
+    "Blitz.UI"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

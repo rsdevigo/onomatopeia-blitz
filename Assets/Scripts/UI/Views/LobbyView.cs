@@ -41,9 +41,12 @@ namespace Blitz.UI.Views
             _presenter = null;
 
             var doc = GetComponent<UIDocument>();
-            if (doc == null || lobby == null) return;
+            if (lobby == null) return;
 
-            var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
+            var rootElement = doc != null ? doc.rootVisualElement : null;
+            if (rootElement == null) return;
+
+            var root = rootElement.Q("root") ?? rootElement;
             var simulate = root.Q<Button>("simulate");
             var clear = root.Q<Button>("clear");
             if (simulate != null) simulate.clicked -= lobby.SimulateLocalFill;

@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../../USS/Theme.uss" />
-    <ui:VisualElement name="root" class="blitz-root blitz-stack" style="flex-grow: 0;">
+    <ui:VisualElement name="root" class="blitz-root blitz-stack blitz-hud-root">
         <ui:VisualElement class="blitz-row" style="justify-content: space-between;">
             <ui:Label name="phase" text="Fase: --" />
             <ui:Label name="score" text="Pontos: 0" />

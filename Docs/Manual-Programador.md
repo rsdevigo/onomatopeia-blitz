@@ -10,7 +10,7 @@ Arquitetura **Blitz** em assemblies, fluxo de **match/rodada**, **UI** desacopla
 | **Blitz.Gameplay** | `Assets/Scripts/Gameplay/Blitz.Gameplay.asmdef` | `Blitz.Core`, `Unity.InputSystem` | MonoBehaviours, mesa, input de grab, sessão offline, minijogos, host do lobby |
 | **Blitz.UI** | `Assets/Scripts/UI/Blitz.UI.asmdef` | `Blitz.Core`, `Blitz.Gameplay` | UI Toolkit views/presenters/viewmodels — não chame `Physics.Raycast` daqui |
 | **Blitz.Netcode** | `Assets/Scripts/Networking/NGO/Blitz.Netcode.asmdef` | `Blitz.Core`, `Blitz.Gameplay`, `Unity.Netcode.Runtime`, `Unity.Netcode.GameObjects` | `NetworkBehaviour`, RPCs, variáveis replicadas |
-| **Blitz.App** | `Assets/Scripts/App/Blitz.App.asmdef` | `Blitz.Core`, `Blitz.Gameplay`, `Blitz.UI`, `Blitz.Netcode` | Composição / bootstrap (ex.: `OfflineQuickStart`) |
+| **Blitz.App** | `Assets/Scripts/App/Blitz.App.asmdef` | `Blitz.Core`, `Blitz.Gameplay`, `Blitz.UI`, `Blitz.Netcode` | Composição legada (`OfflineQuickStart`; preferir orquestrador na core) |
 
 **Direção permitida:** `Core` ← ninguém de “jogo”; `Gameplay` → `Core`; `UI` → `Core` + `Gameplay` (para `IMatchSession`, etc.); `Netcode` → `Core` + `Gameplay` + pacotes NGO; `App` → todos.
 
@@ -27,7 +27,9 @@ Arquivos-chave em `Assets/Scripts/Core/`:
 - **`CardGenerator.cs`** — gera **carta** para um `ActiveOnomatopoeiaSet` já fixo na partida (retries internos).
 - **`CardUniqueness.cs`** — invariantes de unicidade (usado pelo gerador e pelos testes).
 - **`MatchModels.cs`** — `MatchRules`, `MatchPhase`, `RoundOutcome`.
-- **`GameSessionPrefs.cs`** — chaves `PlayerPrefs` partilhadas entre cenas (`PlayerName`, `DifficultyIndex`, `PendingResultsScore`).
+- **`GameSessionPrefs.cs`** — chaves `PlayerPrefs` partilhadas entre cenas (`PlayerName`, `SelectedDifficultyId`, `SelectedMinigameId`, `PendingResultsScore`; `DifficultyIndex` legado).
+- **`MinigameIds.cs`** / **`DifficultyIds.cs`** — identificadores estáveis para prefs e SOs (`easy`, `medium`, `hard`).
+- **`DifficultyProfile`**, **`DifficultyCatalog`** — rodadas, grab window, seed offset; ver [Manual de ScriptableObjects](Manual-ScriptableObjects.md) §8.
 - **Lobby (contrato + stub)** — `ILobbyService`, `LobbyServiceStub`, modelos de seat em `Assets/Scripts/Core/`.
 
 ### Testes EditMode
@@ -41,7 +43,7 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 
 ### Contrato
 
-- **`IMatchSession`** (`Assets/Scripts/Gameplay/Match/IMatchSession.cs`) — fase, pontos, carta ativa, conjunto ativo (`ActiveOnomatopoeiaSet`), `TrySubmitGrab`, `Tick`, evento `StateChanged`; `StartMatch(rules, seed)` ou `StartMatch(rules, activeSet, cardGenSeed)`.
+- **`IMatchSession`** (`Assets/Scripts/Gameplay/Match/IMatchSession.cs`) — fase, pontos, carta ativa, conjunto ativo (`ActiveOnomatopoeiaSet`), `TrySubmitGrab`, `Tick`, eventos `StateChanged`, `CardPrepared`, `RoundResolved`; `StartMatch(rules, seed)` ou `StartMatch(rules, activeSet, cardGenSeed)`.
 
 ### Implementação offline
 
@@ -56,18 +58,32 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 
 - **`TableRuntimeRegistry`** — registro de `SoundObjectInstance`, `TryRaycastGrab(Camera, screenPos, out SoundObjectId)`; **`ApplyMatchSlots`** aplica os três SOs da partida aos slots.
 - **`SoundObjectInstance`** — `slotIndex` 0–2; `OnEnable` registra no registry; opcional **`SpriteRenderer`** (`figureRenderer`) preenchido por `ApplyFromDefinition` quando há `OnomatopoeiaDefinition` no slot.
-- **`OfflineGrabInputDriver`** — `GrabPhase` + clique esquerdo (`Mouse.current`) + `TrySubmitGrab`.
+- **`OfflineGrabInputDriver`** (cena **core**) — `GrabPhase` + clique esquerdo + raycast na mesa aditiva + `TrySubmitGrab`. Ativo só quando o descriptor tem `UseBlitzGrabDriver` (Blitz).
+- **`FantasmaWorldGrabInput`** (cena **Fantasma** aditiva) — raycast local + `FantasmaLadraoMinigame.TrySubmitWorldGrab` → `IInputRouter` (com `ISolutionSpaceAdapter`).
 
-### Fluxo de cenas (offline)
+### Fluxo de cenas (offline, core + aditiva)
 
-- **`SceneNames`** / **`SceneFlow`** (`Assets/Scripts/Gameplay/Navigation/`) — nomes estáveis das cenas e `LoadSceneAsync(..., Single)` para menu, jogo offline, resultados e ranking. As views de UI chamam estes métodos (ex.: `MainMenuView` → `LoadOfflineGame`, fim de partida → `LoadResults`).
-- **Build Settings** — ordem sugerida no **File → Build Settings** (índice 0 = entrada do *build*):
+```mermaid
+flowchart LR
+  Menu[10_MainMenu] --> Core[30_Gameplay_Core Single]
+  Core --> Add[31/32_Minigame Additive]
+  Core --> Orch[OfflineMinigameOrchestrator]
+  Orch --> Results[40_Results]
+  Results --> Menu
+```
+
+- **`SceneNames`** / **`SceneFlow`** (`Assets/Scripts/Gameplay/Navigation/`) — `LoadOfflineGame()` carrega a core; o menu grava `SelectedMinigameId` antes de continuar. `LoadOfflineMatch(minigameId)` opcional para forçar o minijogo.
+- **Build Settings** — ordem no **File → Build Settings** (índice 0 = menu):
   0. `Assets/Scenes/10_MainMenu.unity`
-  1. `Assets/Scenes/30_Gameplay_Offline.unity`
-  2. `Assets/Scenes/40_Results.unity`
-  3. `Assets/Scenes/50_Leaderboard.unity`
-  4. `Assets/Scenes/SampleScene.unity` (opcional; iteração rápida sem passar pelo menu)
-- **`OfflineQuickStart`** (`Blitz.App`) — ao terminar a partida (`MatchPhase.MatchEnd`), grava a pontuação em `GameSessionPrefs.PendingResultsScore` e carrega `40_Results`.
+  1. `Assets/Scenes/30_Gameplay_Core.unity`
+  2. `Assets/Scenes/31_Minigame_Blitz.unity`
+  3. `Assets/Scenes/32_Minigame_Fantasma.unity`
+  4. `Assets/Scenes/40_Results.unity`
+  5. `Assets/Scenes/50_Leaderboard.unity`
+  6. `Assets/Scenes/SampleScene.unity` (opcional)
+- **`OfflineMinigameOrchestrator`** — na core: lê prefs + `MinigameCatalog`, carrega cena aditiva, `OnRegister(MinigameServices)`, ciclo `IMinigame`, fim → `LoadResults`.
+- **`MinigameServicesHost`** — monta o saco (`IAudioDirector`, `IInputRouter`, `IPrefabSpawner`, `IPlayerVisualRegistry`) antes de `OnSceneLoaded`.
+- **`30_Gameplay_Offline.unity`** — legado monolítico; preferir core + aditiva. Menu **Blitz → Setup Gameplay Scenes** regenera cenas se necessário.
 
 ### Feedback
 
@@ -80,7 +96,9 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 ### Minijogos
 
 - **`IMinigame`**, **`MinigameServices`**, **`MatchConfig`** — `Assets/Scripts/Gameplay/Minigames/IMinigame.cs`.
-- **`BlitzOnomatopoeicoMinigame`**, **`FantasmaLadraoMinigame`** — exemplos; Fantasma expõe `TrySubmitWorldGrab` com `ISolutionSpaceAdapter`.
+- **`MinigameDescriptor`**, **`MinigameCatalog`** — SO em `Assets/ScriptableObjects/Minigames/` (`MinigameId`, `AdditiveSceneName`, `UseBlitzGrabDriver`). Passo a passo no [Manual de ScriptableObjects](Manual-ScriptableObjects.md).
+- **`MinigameLoader`**, **`OfflineMinigameOrchestrator`** — load/unload aditivo e ciclo de vida.
+- **`BlitzOnomatopoeicoMinigame`**, **`FantasmaLadraoMinigame`** — implementações; Fantasma usa `TrySubmitWorldGrab` → `services.Input`.
 - **`ISolutionSpaceAdapter`** / **`IdentitySolutionSpaceAdapter`** — mapear pick do mundo ↔ slot core.
 
 ## 4. UI (`Blitz.UI`)
@@ -108,10 +126,13 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 
 ## 6. Extensão: novo minijogo
 
-1. Implemente **`IMinigame`** (ciclo de vida: registro, cena carregada, início/fim de match e rodada).
-2. Se o espaço de picks no mundo **não** for 1:1 com slots 0–2, forneça **`ISolutionSpaceAdapter`** (ver Fantasma).
-3. Coloque cena aditiva e prefabs em `Assets/Prefabs/Minigames/...` conforme convenção.
-4. (Futuro) `MinigameDescriptor` ScriptableObject + loader — ainda conceitual no blueprint; até lá, documente o nome da cena no PR.
+1. Crie cena aditiva `Assets/Scenes/3x_Minigame_<Nome>.unity` (mesa/props + `IMinigame` na hierarquia).
+2. Adicione a cena ao **Build Settings** (após a core).
+3. Crie **`MinigameDescriptor`** em `Assets/ScriptableObjects/Minigames/` (`MinigameId`, `AdditiveSceneName`, `UseBlitzGrabDriver` se usar `OfflineGrabInputDriver` na core).
+4. Registe o descriptor em **`MinigameCatalog`**.
+5. Adicione entrada no dropdown do menu (`MainMenuViewModel.Minigames` / `MinigameIds`).
+6. Implemente **`IMinigame`**; em `OnRegister`, cacheie `MinigameServices` (nunca depender de `Empty` em play mode offline).
+7. Se picks no mundo ≠ slots 0–2, use **`ISolutionSpaceAdapter`** + input dedicado (padrão Fantasma).
 
 ## 7. Convenções do repositório
 
@@ -124,4 +145,5 @@ Rodar no Unity: **Window → General → Test Runner → EditMode**.
 - [Primeiros passos](Getting-Started.md)  
 - [Manual do Designer](Manual-Designer.md)  
 - [Manual do Game Designer](Manual-Game-Designer.md)  
+- [Manual de ScriptableObjects](Manual-ScriptableObjects.md)  
 - [README dos Docs](README.md)

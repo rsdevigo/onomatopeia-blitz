@@ -11,7 +11,14 @@ namespace Blitz.Gameplay.Navigation
             SceneManager.LoadSceneAsync(SceneNames.MainMenu, LoadSceneMode.Single);
 
         public static void LoadOfflineGame() =>
-            SceneManager.LoadSceneAsync(SceneNames.GameplayOffline, LoadSceneMode.Single);
+            SceneManager.LoadSceneAsync(SceneNames.GameplayCore, LoadSceneMode.Single);
+
+        public static void LoadOfflineMatch(string minigameId)
+        {
+            PlayerPrefs.SetString(GameSessionPrefs.SelectedMinigameId, minigameId);
+            PlayerPrefs.Save();
+            LoadOfflineGame();
+        }
 
         public static void LoadLeaderboard() =>
             SceneManager.LoadSceneAsync(SceneNames.Leaderboard, LoadSceneMode.Single);

@@ -42,6 +42,7 @@ namespace Blitz.Gameplay
             _matchSet = activeSet;
             ActiveSet = activeSet;
             _generator = new CardGenerator(cardGenSeed);
+            _generator.ResetDeck(activeSet);
             CurrentRoundIndex = 0;
             Score = 0;
             Phase = MatchPhase.MatchInit;
@@ -134,6 +135,9 @@ namespace Blitz.Gameplay
 
         void PrepareRoundContent()
         {
+            if (_generator is null)
+                throw new InvalidOperationException("Tick before BeginMatch.");
+
             if (!_generator.TryGenerateCard(_matchSet, out var card))
                 throw new InvalidOperationException("Card generation failed.");
 

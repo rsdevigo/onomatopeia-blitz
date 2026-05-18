@@ -7,6 +7,11 @@ namespace Blitz.Core
     /// </summary>
     public static class CardUniqueness
     {
+        public static bool HaveSameGameplayIdentity(GeneratedCard a, GeneratedCard b) =>
+            a.CardLetterId.Value == b.CardLetterId.Value
+            && a.Mode == b.Mode
+            && a.CueOnomatopoeiaId.Value == b.CueOnomatopoeiaId.Value;
+
         public static bool ExclusionHasUniqueSolution(LetterId cardLetter, OnomatopoeiaId cue, ActiveOnomatopoeiaSet set)
         {
             var trueUnit = set.TrueOnomatopoeiaForLetter(cardLetter);

@@ -21,5 +21,9 @@ namespace Blitz.Gameplay
         bool TrySubmitGrab(SoundObjectId id);
 
         event Action? StateChanged;
+
+        event Action<GeneratedCard>? CardPrepared;
+
+        event Action<RoundOutcome>? RoundResolved;
     }
 }

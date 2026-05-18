@@ -9,7 +9,15 @@ namespace Blitz.UI.ViewModels
 
         public int DifficultyIndex { get; set; }
 
-        public IReadOnlyList<string> Difficulties { get; } = new[] { "Fácil", "Médio", "Difícil" };
+        public List<string> DifficultyLabels { get; } = new();
+
+        public List<string> DifficultyIds { get; } = new();
+
+        public int MinigameIndex { get; set; }
+
+        public IReadOnlyList<string> Minigames { get; } = new[] { "Blitz Onomatopoeico", "Fantasma Ladrão" };
+
+        public IReadOnlyList<string> MinigameIds { get; } = new[] { Core.MinigameIds.BlitzOnomatopoeico, Core.MinigameIds.FantasmaLadrao };
 
         public event Action? Changed;
 

@@ -5,7 +5,8 @@ using UnityEngine;
 namespace Blitz.Gameplay.Input
 {
     /// <summary>
-    /// Offline mouse/touch grab: left button during grab phase raycasts into <see cref="TableRuntimeRegistry"/>.
+    /// Blitz offline grab: left button during grab phase raycasts into <see cref="TableRuntimeRegistry"/>
+    /// (lives in the additive minigame scene). Disabled for Fantasma — see <see cref="FantasmaWorldGrabInput"/>.
     /// </summary>
     public sealed class OfflineGrabInputDriver : MonoBehaviour
     {
@@ -16,12 +17,13 @@ namespace Blitz.Gameplay.Input
         void Awake()
         {
             targetCamera ??= Camera.main;
-            registry ??= FindAnyObjectByType<TableRuntimeRegistry>();
             session ??= FindAnyObjectByType<LocalMatchSession>();
         }
 
         void Update()
         {
+            registry ??= FindAnyObjectByType<TableRuntimeRegistry>();
+
             if (session is null || registry is null || targetCamera is null)
                 return;
 

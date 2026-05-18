@@ -10,6 +10,7 @@ Party game educativo em **sessões**: mesa com **três** objetos sonoros, **cart
 | **Designer (conteúdo / UI)** | [Manual do Designer](Manual-Designer.md) | Arte, áudio, prefabs, UI Toolkit (UXML/USS), mesa com 3 slots, lobby na UI |
 | **Game Designer** | [Manual do Game Designer](Manual-Game-Designer.md) | Regras, loop de jogo, fases, dificuldade, multijogador na UX, specs para dev, playtest |
 | **Programador** | [Manual do Programador](Manual-Programador.md) | Assemblies, Core/Gameplay/UI/Netcode, fluxo de match, NGO, testes, extensão |
+| **Conteúdo / configuração de dados** | [Manual de ScriptableObjects](Manual-ScriptableObjects.md) | Criar catálogos de onomatopeia e minijogo, ligar na cena core |
 
 **Importante:** neste índice, “Designer” = produção visual e montagem no Unity. “Game Designer” = sistemas e experiência de jogo (GDD). Não confunda os dois.
 

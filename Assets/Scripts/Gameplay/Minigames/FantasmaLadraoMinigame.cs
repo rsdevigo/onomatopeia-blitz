@@ -4,16 +4,19 @@ using UnityEngine;
 namespace Blitz.Gameplay.Minigames
 {
     /// <summary>
-    /// Second minigame: letter-forward props with an adapter hook for future remapping.
+    /// Fantasma variant: world picks go through <see cref="TrySubmitWorldGrab"/> → <see cref="IInputRouter"/>.
+    /// The core <see cref="Input.OfflineGrabInputDriver"/> stays disabled; use <see cref="FantasmaWorldGrabInput"/> in this scene.
     /// </summary>
     public sealed class FantasmaLadraoMinigame : MonoBehaviour, IMinigame
     {
         [SerializeField] LocalMatchSession? session;
 
+        MinigameServices _services = MinigameServices.Empty;
         ISolutionSpaceAdapter _adapter = IdentitySolutionSpaceAdapter.Instance;
 
         public void OnRegister(MinigameServices services)
         {
+            _services = services;
             _adapter = IdentitySolutionSpaceAdapter.Instance;
         }
 
@@ -33,12 +36,13 @@ namespace Blitz.Gameplay.Minigames
         {
         }
 
-        public void OnUnregister()
-        {
-        }
+        public void OnUnregister() => _services = MinigameServices.Empty;
 
-        public bool TrySubmitWorldGrab(SoundObjectId worldSlot) =>
-            session is not null && session.TrySubmitGrab(_adapter.WorldPickToCoreSlot(worldSlot));
+        public bool TrySubmitWorldGrab(SoundObjectId worldSlot)
+        {
+            var coreSlot = _adapter.WorldPickToCoreSlot(worldSlot);
+            return _services.Input.TrySubmitGrab(coreSlot);
+        }
 
         public ISolutionSpaceAdapter Adapter => _adapter;
     }

@@ -15,6 +15,7 @@ namespace Blitz.UI.Presenters
         readonly Label _timer;
         readonly Label _letter;
         readonly Label _cue;
+        readonly Label _prompt;
         readonly Image? _cardFigure;
         IVisualElementScheduledItem? _tick;
 
@@ -27,6 +28,7 @@ namespace Blitz.UI.Presenters
             _timer = root.Q<Label>("timer")!;
             _letter = root.Q<Label>("card-letter")!;
             _cue = root.Q<Label>("card-cue")!;
+            _prompt = root.Q<Label>("prompt")!;
             _cardFigure = root.Q<Image>("card-figure");
         }
 
@@ -53,31 +55,54 @@ namespace Blitz.UI.Presenters
             if (_session.CurrentCard is not { } card || _session.ActiveSet is not { } activeSet)
             {
                 _letter.text = "Letra: --";
-                _cue.text = "Som: --";
+                _cue.text = "Estímulo: --";
+                _prompt.text = "Diz o som!";
                 ClearCardFigure();
                 return;
             }
 
-            var trueForLetter = activeSet.TrueOnomatopoeiaForLetter(card.CardLetterId);
-            OnomatopoeiaDefinition? letterDef = null;
-            _content?.TryGetDefinition(trueForLetter, out letterDef);
-            _letter.text = letterDef != null ? $"Letra: {letterDef.LetterDisplay}" : $"Letra: {card.CardLetterId.Value}";
+            var cardLetterDef = ResolveDefinition(activeSet.TrueOnomatopoeiaForLetter(card.CardLetterId));
+            _letter.text = cardLetterDef != null
+                ? $"Letra da carta: {cardLetterDef.LetterDisplay}"
+                : $"Letra da carta: {card.CardLetterId.Value}";
 
-            OnomatopoeiaDefinition? cueDef = null;
-            _content?.TryGetDefinition(card.CueOnomatopoeiaId, out cueDef);
-            if (cueDef != null && !string.IsNullOrWhiteSpace(cueDef.WrittenLabel))
-                _cue.text = $"{cueDef.WrittenLabel} ({card.Mode})";
+            var cueDef = ResolveDefinition(card.CueOnomatopoeiaId);
+            var cueLabel = cueDef != null && !string.IsNullOrWhiteSpace(cueDef.WrittenLabel)
+                ? cueDef.WrittenLabel
+                : card.CueOnomatopoeiaId.Value.ToString();
+
+            _cue.text = $"Som/figura na carta: {cueLabel}";
+
+            if (card.Mode == CardMode.HasTruePair)
+            {
+                _prompt.text =
+                    "PAR — o estímulo é desta letra. Clique na mesa o objeto com este som/figura.";
+            }
             else
-                _cue.text = $"Som (cue): {card.CueOnomatopoeiaId.Value} ({card.Mode})";
+            {
+                var cueLetter = activeSet.LetterWhoseTrueOnomatopoeiaIs(card.CueOnomatopoeiaId);
+                var cueLetterDef = ResolveDefinition(activeSet.TrueOnomatopoeiaForLetter(cueLetter));
+                var cardLetterDisplay = cardLetterDef?.LetterDisplay ?? card.CardLetterId.Value.ToString();
+                var cueLetterDisplay = cueLetterDef?.LetterDisplay ?? cueLetter.Value.ToString();
+                _prompt.text =
+                    $"EXCLUSÃO — o estímulo é da letra {cueLetterDisplay}, não da {cardLetterDisplay}. " +
+                    $"Clique o objeto da terceira letra (nem {cardLetterDisplay} nem {cueLetterDisplay}).";
+            }
 
             if (_cardFigure is null)
                 return;
 
-            OnomatopoeiaDefinition? figureDef = null;
-            _content?.TryGetDefinition(trueForLetter, out figureDef);
-            var sprite = figureDef?.FigureSprite;
+            var sprite = cueDef?.FigureSprite;
             _cardFigure.sprite = sprite;
             _cardFigure.style.display = sprite != null ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        OnomatopoeiaDefinition? ResolveDefinition(OnomatopoeiaId id)
+        {
+            if (_content is null)
+                return null;
+
+            return _content.TryGetDefinition(id, out var def) ? def : null;
         }
 
         void ClearCardFigure()

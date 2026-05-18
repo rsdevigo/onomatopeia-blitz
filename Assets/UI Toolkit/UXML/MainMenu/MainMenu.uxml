@@ -5,6 +5,7 @@
         <ui:Label text="Blitz Onomatopoeico" class="blitz-title" />
         <ui:TextField name="player-name" label="Nome" value="Jogador" />
         <ui:DropdownField name="difficulty" label="Dificuldade" />
+        <ui:DropdownField name="minigame" label="Minijogo" />
         <ui:Button name="continue" text="Continuar" class="blitz-button blitz-button-primary" />
         <ui:Label name="hint" class="blitz-muted" text="UI Toolkit + MVVM shell" />
     </ui:VisualElement>

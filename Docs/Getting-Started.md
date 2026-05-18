@@ -83,5 +83,6 @@ Se o `VisualTreeAsset` estiver vazio, a tela fica em branco: **sempre atribua o 
 - **Montar arte/UI/cenas:** [Manual do Designer](Manual-Designer.md)  
 - **Regras, pacing, GDD, pedidos de feature:** [Manual do Game Designer](Manual-Game-Designer.md)  
 - **Arquitetura, extensão, rede, testes:** [Manual do Programador](Manual-Programador.md)  
+- **Criar catálogos e definitions (SO):** [Manual de ScriptableObjects](Manual-ScriptableObjects.md)  
 
 Índice geral: [README desta pasta](README.md).

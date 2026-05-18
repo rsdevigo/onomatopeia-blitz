@@ -45,15 +45,29 @@ namespace Blitz.Gameplay.Table
         public bool TryRaycastGrab(Camera camera, Vector3 screenPoint, out SoundObjectId id)
         {
             id = default;
+            if (camera is null)
+                return false;
+
             var ray = camera.ScreenPointToRay(screenPoint);
-            if (!Physics.Raycast(ray, out var hit, 100f, ~0, QueryTriggerInteraction.Ignore))
+            var hit2D = Physics2D.GetRayIntersection(ray, 100f);
+            if (hit2D.collider != null)
+            {
+                var sound2D = hit2D.collider.GetComponentInParent<SoundObjectInstance>();
+                if (sound2D != null)
+                {
+                    id = new SoundObjectId(sound2D.SlotIndex);
+                    return true;
+                }
+            }
+
+            if (!Physics.Raycast(ray, out var hit3D, 100f, ~0, QueryTriggerInteraction.Ignore))
                 return false;
 
-            var sound = hit.collider.GetComponentInParent<SoundObjectInstance>();
-            if (sound is null)
+            var sound3D = hit3D.collider.GetComponentInParent<SoundObjectInstance>();
+            if (sound3D is null)
                 return false;
 
-            id = new SoundObjectId(sound.SlotIndex);
+            id = new SoundObjectId(sound3D.SlotIndex);
             return true;
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Blitz.Core;
+//using UnityEngine;
 
 namespace Blitz.Gameplay.Content
 {
@@ -60,6 +61,9 @@ namespace Blitz.Gameplay.Content
                 if (a.Letter == b.Letter || a.Letter == c.Letter || b.Letter == c.Letter)
                     continue;
 
+                if (!HasDistinctTablePresentation(a, b, c))
+                    continue;
+
                 var slots = new[] { a.Id, b.Id, c.Id };
                 Shuffle(slots, rng);
                 set = new ActiveOnomatopoeiaSet(
@@ -75,6 +79,22 @@ namespace Blitz.Gameplay.Content
 
             return false;
         }
+
+        /// <summary>
+        /// Each table slot must look and sound different: no shared figure sprite or audio clip.
+        /// </summary>
+        public static bool HasDistinctTablePresentation(
+            OnomatopoeiaDefinition a,
+            OnomatopoeiaDefinition b,
+            OnomatopoeiaDefinition c) =>
+            PairDistinct(a.FigureSprite, b.FigureSprite)
+            && PairDistinct(a.FigureSprite, c.FigureSprite)
+            && PairDistinct(b.FigureSprite, c.FigureSprite)
+            && PairDistinct(a.AudioClip, b.AudioClip)
+            && PairDistinct(a.AudioClip, c.AudioClip)
+            && PairDistinct(b.AudioClip, c.AudioClip);
+
+        static bool PairDistinct(UnityEngine.Object? x, UnityEngine.Object? y) => !ReferenceEquals(x, y);
 
         static void Shuffle(OnomatopoeiaId[] list, Random rng)
         {

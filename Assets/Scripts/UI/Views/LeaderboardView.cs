@@ -31,9 +31,10 @@ namespace Blitz.UI.Views
         void OnDisable()
         {
             var doc = GetComponent<UIDocument>();
-            if (doc == null) return;
+            var rootElement = doc != null ? doc.rootVisualElement : null;
+            if (rootElement == null) return;
 
-            var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
+            var root = rootElement.Q("root") ?? rootElement;
             var back = root.Q<Button>("back");
             if (back != null)
                 back.clicked -= OnBack;

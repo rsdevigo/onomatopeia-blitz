@@ -37,9 +37,10 @@ namespace Blitz.UI.Views
             _presenter = null;
 
             var doc = GetComponent<UIDocument>();
-            if (doc == null) return;
+            var rootElement = doc != null ? doc.rootVisualElement : null;
+            if (rootElement == null) return;
 
-            var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
+            var root = rootElement.Q("root") ?? rootElement;
             var toLb = root.Q<Button>("to-leaderboard");
             var toMenu = root.Q<Button>("to-menu");
             if (toLb != null) toLb.clicked -= OnToLeaderboard;

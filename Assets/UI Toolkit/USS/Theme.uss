@@ -17,6 +17,14 @@
     padding: var(--space-3);
 }
 
+/* Gameplay HUD: top strip only — must not cover table picks */
+.blitz-hud-root {
+    flex-grow: 0;
+    align-self: flex-start;
+    width: 100%;
+    max-height: 45%;
+}
+
 .blitz-title {
     -unity-font-style: bold;
     font-size: 22px;

@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/10_MainMenu.unity
     guid: 81d6b55dd1554a3a90b798ba355d81b1
   - enabled: 1
-    path: Assets/Scenes/30_Gameplay_Offline.unity
-    guid: 65b0a8e7465942838cf5463ea94ff45f
+    path: Assets/Scenes/30_Gameplay_Core.unity
+    guid: a7c8d9e0f1b243658697a8b9c0d1e2f3
+  - enabled: 1
+    path: Assets/Scenes/31_Minigame_Blitz.unity
+    guid: b8d9e0f1a2c344758697a8b9c0d1e2f4
+  - enabled: 1
+    path: Assets/Scenes/32_Minigame_Fantasma.unity
+    guid: c9e0f1a2b3c445868697a8b9c0d1e2f5
   - enabled: 1
     path: Assets/Scenes/40_Results.unity
     guid: 251532a642974408a5c5af0fd2cc59d6

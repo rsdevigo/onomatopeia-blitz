@@ -1,13 +1,16 @@
+using System;
 using Blitz.Core;
 using Blitz.Gameplay;
+using Blitz.Gameplay.Minigames;
 using Blitz.Gameplay.Navigation;
 using UnityEngine;
 
 namespace Blitz.App
 {
     /// <summary>
-    /// Starts an offline match; when the match ends, opens the results scene with the final score.
+    /// Legacy quick-start for monolithic <c>30_Gameplay_Offline</c>. Prefer <see cref="OfflineMinigameOrchestrator"/> on core.
     /// </summary>
+    [Obsolete("Use OfflineMinigameOrchestrator on 30_Gameplay_Core with additive minigame scenes.")]
     public sealed class OfflineQuickStart : MonoBehaviour
     {
         [SerializeField] LocalMatchSession? session;
@@ -19,6 +22,9 @@ namespace Blitz.App
 
         void Start()
         {
+            if (FindAnyObjectByType<OfflineMinigameOrchestrator>() != null)
+                return;
+
             session ??= FindAnyObjectByType<LocalMatchSession>();
             if (session is null)
                 return;

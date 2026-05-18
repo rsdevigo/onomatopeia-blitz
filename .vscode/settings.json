@@ -56,7 +56,7 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "blitz_onomatopoeico.sln",
+    "dotnet.defaultSolution": "onomatopeia-blitz.sln",
     "dotrush.roslyn.projectOrSolutionFiles": [
         "c:\\Users\\Rodrigo\\Documents\\unity_projetos\\onomatopeia-blitz\\onomatopeia-blitz.slnx"
     ]

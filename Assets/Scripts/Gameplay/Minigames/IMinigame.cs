@@ -16,7 +16,35 @@ namespace Blitz.Gameplay.Minigames
 
     public sealed class MinigameServices
     {
-        public static MinigameServices Empty { get; } = new MinigameServices();
+        public IAudioDirector Audio { get; }
+        public IInputRouter Input { get; }
+        public IPrefabSpawner Spawner { get; }
+        public IPlayerVisualRegistry Players { get; }
+
+        MinigameServices(
+            IAudioDirector audio,
+            IInputRouter input,
+            IPrefabSpawner spawner,
+            IPlayerVisualRegistry players)
+        {
+            Audio = audio;
+            Input = input;
+            Spawner = spawner;
+            Players = players;
+        }
+
+        public static MinigameServices Empty { get; } = Create(
+            new NullAudioDirector(),
+            new NoOpInputRouter(),
+            new SimplePrefabSpawner(null),
+            NullPlayerVisualRegistry.Instance);
+
+        public static MinigameServices Create(
+            IAudioDirector audio,
+            IInputRouter input,
+            IPrefabSpawner spawner,
+            IPlayerVisualRegistry players) =>
+            new(audio, input, spawner, players);
     }
 
     public interface IMinigame

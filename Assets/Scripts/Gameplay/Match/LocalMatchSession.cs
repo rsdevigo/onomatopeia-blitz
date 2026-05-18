@@ -16,6 +16,8 @@ namespace Blitz.Gameplay
 
         Dictionary<OnomatopoeiaId, OnomatopoeiaDefinition>? _definitionsById;
 
+        bool _matchStarted;
+
         void Awake()
         {
             _round.RoundResolved += OnRoundResolved;
@@ -42,6 +44,10 @@ namespace Blitz.Gameplay
 
         public event Action? StateChanged;
 
+        public event Action<GeneratedCard>? CardPrepared;
+
+        public event Action<RoundOutcome>? RoundResolved;
+
         public bool TryGetDefinition(OnomatopoeiaId id, out OnomatopoeiaDefinition? definition)
         {
             definition = null;
@@ -63,6 +69,7 @@ namespace Blitz.Gameplay
 
         void BeginMatchInternal(MatchRules rules, ActiveOnomatopoeiaSet activeSet, int cardGenSeed)
         {
+            _matchStarted = true;
             _round.BeginMatch(rules, activeSet, cardGenSeed);
             ApplyTableBindings(activeSet);
             StateChanged?.Invoke();
@@ -76,16 +83,24 @@ namespace Blitz.Gameplay
 
         void OnCardPrepared(GeneratedCard card)
         {
-            if (!TryGetDefinition(card.CueOnomatopoeiaId, out var def) || def?.AudioClip is null)
-                return;
+            if (TryGetDefinition(card.CueOnomatopoeiaId, out var def) && def?.AudioClip != null)
+            {
+                if (_cardCueAudio != null)
+                    _cardCueAudio.PlayOneShot(def.AudioClip);
+                else
+                    AudioSource.PlayClipAtPoint(def.AudioClip, Vector3.zero);
+            }
 
-            if (_cardCueAudio != null)
-                _cardCueAudio.PlayOneShot(def.AudioClip);
-            else
-                AudioSource.PlayClipAtPoint(def.AudioClip, Vector3.zero);
+            CardPrepared?.Invoke(card);
         }
 
-        void Update() => Tick(Time.deltaTime);
+        void Update()
+        {
+            if (!_matchStarted)
+                return;
+
+            Tick(Time.deltaTime);
+        }
 
         public void Tick(float deltaTime)
         {
@@ -103,6 +118,10 @@ namespace Blitz.Gameplay
             return ok;
         }
 
-        void OnRoundResolved(RoundOutcome _) => StateChanged?.Invoke();
+        void OnRoundResolved(RoundOutcome outcome)
+        {
+            RoundResolved?.Invoke(outcome);
+            StateChanged?.Invoke();
+        }
     }
 }

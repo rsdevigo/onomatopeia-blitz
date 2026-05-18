@@ -4,31 +4,31 @@ overview: "Evoluir o fluxo de cenas (Fase 1) para o blueprint: Gameplay_Core + m
 todos:
   - id: split-scenes
     content: Dividir 30_Gameplay_Offline em 30_Gameplay_Core + 31_Minigame_Blitz + 32_Minigame_Fantasma; atualizar Build Settings
-    status: pending
+    status: completed
   - id: minigame-so
     content: Criar MinigameDescriptor + MinigameCatalog SO e assets em ScriptableObjects/Minigames
-    status: pending
+    status: completed
   - id: session-events
     content: Expor CardPrepared/RoundResolved em IMatchSession/LocalMatchSession
-    status: pending
+    status: completed
   - id: minigame-services
     content: Definir interfaces do saco de serviços, MinigameServicesHost na core e injeção em OnRegister (substituir Empty)
-    status: pending
+    status: completed
   - id: minigame-loader
     content: Implementar MinigameLoader (Load/Unload additive) + OfflineMinigameOrchestrator com ciclo IMinigame
-    status: pending
+    status: completed
   - id: scene-flow-v2
     content: Evoluir SceneFlow/SceneNames/GameSessionPrefs (SelectedMinigameId); remover OfflineQuickStart duplicado
-    status: pending
+    status: completed
   - id: menu-minigame-pick
     content: "MainMenu: seleção de minijogo + gravar prefs; continuar → LoadOfflineGame"
-    status: pending
+    status: completed
   - id: input-fantasma
     content: Documentar/ajustar grab Blitz vs Fantasma (driver vs TrySubmitWorldGrab)
-    status: pending
+    status: completed
   - id: docs-blueprint-flow
     content: Atualizar Manual-Programador com fluxo core+aditivo e extensão de minijogo
-    status: pending
+    status: completed
 isProject: false
 ---
 
