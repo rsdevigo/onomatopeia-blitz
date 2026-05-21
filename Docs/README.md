@@ -11,6 +11,7 @@ Party game educativo em **sessões**: mesa com **três** objetos sonoros, **cart
 | **Artista / produção de assets** | [Lista de assets — artistas](Lista-Assets-Artistas.md) | Checklist Props, UI, SFX, VFX, shaders e prioridades P0–P2 |
 | **Game Designer** | [Manual do Game Designer](Manual-Game-Designer.md) | Regras, loop de jogo, fases, dificuldade, multijogador na UX, specs para dev, playtest |
 | **Programador** | [Manual do Programador](Manual-Programador.md) | Assemblies, Core/Gameplay/UI/Netcode, fluxo de match, NGO, testes, extensão |
+| **Programador (integração de assets)** | [Cronograma de integração — programador](Cronograma-Integracao-Programador.md) | Fases A–C, hooks `IMinigame`, checklist I1–I16 vs lista de arte |
 | **Conteúdo / configuração de dados** | [Manual de ScriptableObjects](Manual-ScriptableObjects.md) | Criar catálogos de onomatopeia e minijogo, ligar na cena core |
 
 **Importante:** neste índice, “Designer” = produção visual e montagem no Unity. “Game Designer” = sistemas e experiência de jogo (GDD). Não confunda os dois.

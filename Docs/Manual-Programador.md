@@ -146,4 +146,6 @@ flowchart LR
 - [Manual do Designer](Manual-Designer.md)  
 - [Manual do Game Designer](Manual-Game-Designer.md)  
 - [Manual de ScriptableObjects](Manual-ScriptableObjects.md)  
+- [Lista de assets — artistas](Lista-Assets-Artistas.md) — o que a arte entrega  
+- [Cronograma de integração — programador](Cronograma-Integracao-Programador.md) — quando e como ligar assets + hooks `IMinigame`  
 - [README dos Docs](README.md)
