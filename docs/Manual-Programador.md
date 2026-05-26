@@ -84,6 +84,17 @@ flowchart LR
 - **`OfflineMinigameOrchestrator`** — na core: lê prefs + `MinigameCatalog`, carrega cena aditiva, `OnRegister(MinigameServices)`, ciclo `IMinigame`, fim → `LoadResults`.
 - **`MinigameServicesHost`** — monta o saco (`IAudioDirector`, `IInputRouter`, `IPrefabSpawner`, `IPlayerVisualRegistry`) antes de `OnSceneLoaded`.
 - **`30_Gameplay_Offline.unity`** — legado monolítico; preferir core + aditiva. Menu **Blitz → Setup Gameplay Scenes** regenera cenas se necessário.
+- **Resultados → ranking → menu:** `40_Results` (`to-leaderboard` → `LoadLeaderboard`) → `50_Leaderboard` (`back` → `LoadMainMenu`).
+
+### Ranking / leaderboard (JSON local)
+
+- **`LeaderboardEntry`**, **`ILeaderboardRepository`**, **`LeaderboardConstants.DefaultTopCount` (20)** — `Assets/Scripts/Core/`.
+- **`LeaderboardServices.Register` / `TryGetRepository`** — registo estático para **UI** e **Gameplay** sem referenciar `Blitz.App`.
+- **`JsonLeaderboardRepository`** (`Blitz.App`) — ficheiro `Application.persistentDataPath/leaderboard.json`, wrapper `{ "Entries": [...] }` via `JsonUtility`.
+- **`LeaderboardBootstrap`** — regista o repositório no arranque (`RuntimeInitializeOnLoadMethod` + opcional GO na cena `10_MainMenu`; menu editor **Blitz → Setup Leaderboard Bootstrap**).
+- **UI:** [`LeaderboardPresenter`](Assets/Scripts/UI/Presenters/LeaderboardPresenter.cs) chama `LoadTop(20)`; [`LeaderboardView`](Assets/Scripts/UI/Views/LeaderboardView.cs) resolve o repositório via `LeaderboardServices`.
+- **Submissão:** [`OfflineMinigameOrchestrator`](Assets/Scripts/Gameplay/Minigames/OfflineMinigameOrchestrator.cs) em `MatchEnd` chama `TryAdd` uma vez por partida (nome, score, `SelectedMinigameId`, `SelectedDifficultyId` em `GameSessionPrefs`). O score é o de `LocalMatchSession` (cartas corretas no protótipo).
+- **Asmdefs:** `JsonLeaderboardRepository` só em **App**; **UI** e **Gameplay** usam apenas `ILeaderboardRepository` do Core.
 
 ### Feedback
 

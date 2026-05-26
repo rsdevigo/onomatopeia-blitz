@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
+using Blitz.App;
 using Blitz.Core;
 using Blitz.Gameplay;
 using Blitz.Gameplay.Input;
@@ -24,6 +25,29 @@ namespace Blitz.Editor
         const string FantasmaScene = "Assets/Scenes/32_Minigame_Fantasma.unity";
         const string CatalogPath = "Assets/ScriptableObjects/Minigames/MinigameCatalog.asset";
         const string DifficultyCatalogPath = "Assets/ScriptableObjects/Difficulty/DifficultyCatalog.asset";
+
+        [MenuItem("Blitz/Setup Leaderboard Bootstrap")]
+        public static void SetupLeaderboardBootstrap()
+        {
+            const string menuScene = "Assets/Scenes/10_MainMenu.unity";
+            if (!File.Exists(menuScene))
+            {
+                Debug.LogError($"Missing scene: {menuScene}");
+                return;
+            }
+
+            EditorSceneManager.OpenScene(menuScene, OpenSceneMode.Single);
+            if (Object.FindAnyObjectByType<LeaderboardBootstrap>() != null)
+            {
+                Debug.Log("LeaderboardBootstrap already present in main menu.");
+                return;
+            }
+
+            var go = new GameObject("LeaderboardBootstrap");
+            go.AddComponent<LeaderboardBootstrap>();
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+            Debug.Log("Added LeaderboardBootstrap to 10_MainMenu.");
+        }
 
         [MenuItem("Blitz/Setup Difficulty Catalog")]
         public static void SetupDifficultyCatalog()

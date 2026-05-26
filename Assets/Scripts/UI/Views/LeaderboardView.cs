@@ -1,3 +1,4 @@
+using Blitz.Core;
 using Blitz.Gameplay.Navigation;
 using Blitz.UI.Presenters;
 using UnityEngine;
@@ -20,8 +21,11 @@ namespace Blitz.UI.Views
                 doc.visualTreeAsset = uxml;
 
             var root = doc.rootVisualElement.Q("root") ?? doc.rootVisualElement;
-            _presenter = new LeaderboardPresenter(root);
-            _presenter.Bind();
+            LeaderboardServices.TryGetRepository(out var repository);
+            if (repository is null)
+                Debug.LogWarning("[LeaderboardView] No ILeaderboardRepository registered. Add LeaderboardBootstrap to the menu scene.");
+
+            _presenter = new LeaderboardPresenter(root, repository);
 
             var back = root.Q<Button>("back");
             if (back != null)

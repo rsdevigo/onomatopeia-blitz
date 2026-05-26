@@ -20,7 +20,7 @@ Fluxo **alvo** (GDD) vs **estado atual** do protótipo:
 | Menu principal | UXML + `MainMenuView` existem; fluxo de cenas pode ser manual |
 | Lobby (até 8 lugares) | `LobbyView` + `LobbyServiceHost` + stub `LobbyServiceStub` (simulação local) |
 | Match / rodadas | **Offline:** `LocalMatchSession` + `RoundController` — jogável com cena mínima |
-| Resultados / ranking | UXML + views existem; persistência real pode ser placeholder |
+| Resultados / ranking | UXML + views; ranking offline persiste em JSON local (top 20), preenchido ao fim de cada partida offline |
 
 Para o **primeiro play**, siga [Primeiros passos](Getting-Started.md).
 

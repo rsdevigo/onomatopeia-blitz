@@ -22,6 +22,7 @@ namespace Blitz.Gameplay.Minigames
         MinigameDescriptor? _descriptor;
         MinigameServices? _services;
         bool _matchEndHandled;
+        bool _leaderboardSubmitted;
 
         async void Start()
         {
@@ -141,8 +142,29 @@ namespace Blitz.Gameplay.Minigames
                 return;
 
             _matchEndHandled = true;
+            TrySubmitLeaderboard();
             _minigame?.OnMatchEnd();
             SceneFlow.LoadResults(_session.Score);
+        }
+
+        void TrySubmitLeaderboard()
+        {
+            if (_leaderboardSubmitted || _session is null)
+                return;
+
+            if (!LeaderboardServices.TryGetRepository(out var repository))
+                return;
+
+            _leaderboardSubmitted = true;
+
+            var entry = new LeaderboardEntry(
+                PlayerPrefs.GetString(GameSessionPrefs.PlayerName, "Jogador"),
+                _session.Score,
+                PlayerPrefs.GetString(GameSessionPrefs.SelectedMinigameId, MinigameIds.BlitzOnomatopoeico),
+                PlayerPrefs.GetString(GameSessionPrefs.SelectedDifficultyId, DifficultyIds.Easy),
+                DateTime.UtcNow);
+
+            repository.TryAdd(entry);
         }
     }
 }
